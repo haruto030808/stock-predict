@@ -54,31 +54,46 @@ export default function Home() {
   const [reuseModal, setReuseModal] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // データ同期
-  useEffect(() => {
-    let isMounted = true;
-    async function loadData() {
-      try {
-        const savedData = localStorage.getItem('stockpredict-v11');
-        let loadedData = savedData ? JSON.parse(savedData) : initialData;
-        const { data: { user }, error: userError } = await supabase.auth.getUser();
-        if (user && !userError && isMounted) {
-          loadedData.user = { name: user.user_metadata.full_name || 'ユーザー', email: user.email };
-        }
-        if (isMounted) setData(loadedData);
-      } catch (e) {
-        if (isMounted) setData(initialData);
-      } finally {
-        if (isMounted) setLoading(false);
+// 1. データ読み込み（Supabaseから直接取得し、UI用の形式に変換）
+useEffect(() => {
+  async function loadData() {
+    // ログイン中のユーザー情報を取得
+    const { data: { user } } = await supabase.auth.getUser();
+    
+    if (user) {
+      setUser(user);
+      
+      // Supabaseの 'items' テーブルから自分のデータだけを取得
+      const { data: dbItems, error } = await supabase
+        .from('items')
+        .select('*')
+        .eq('user_id', user.id)
+        .eq('is_archived', false); // アーカイブされていないものだけ
+      
+      if (!error && dbItems) {
+        // 【ここが重要！】DBの命名（snake_case）をUI用の命名（camelCase）に変換します
+        setItems(dbItems.map(i => ({
+          ...i,
+          // 日付の変換
+          openedDate: i.opened_at,
+          expiryDate: i.expiry_date,
+          // 予測ロジック用の変換
+          estimatedDays: i.base_days,
+          correctionFactor: i.current_factor,
+          // 最新の「独立した人数カラム」を、UIが理解できる一つのオブジェクトにまとめます
+          users: {
+            adultMale: i.adult_male,
+            adultFemale: i.adult_female,
+            childMale: i.child_male,
+            childFemale: i.child_female
+          }
+        })));
       }
     }
-    loadData();
-    return () => { isMounted = false; };
-  }, []);
-
-  useEffect(() => {
-    if (!loading) localStorage.setItem('stockpredict-v11', JSON.stringify(data));
-  }, [data, loading]);
+    setLoading(false);
+  }
+  loadData();
+}, []);
 
   // 計算ロジック
   const calcTotalDays = (item) => {
@@ -113,10 +128,71 @@ export default function Home() {
 
   const handleFinished = (itemId) => { setReuseModal(data.items.find(i => i.id === itemId)); setDetailItem(null); };
   
-  const addItem = (newItem) => {
-    setData(prev => ({ ...prev, items: [...prev.items, { id: Date.now().toString(), ...newItem, openedDate: newItem.mode === 'consumable' ? getTodayStr() : undefined, createdDate: getTodayStr(), correctionFactor: 1.0 }] }));
-    setShowAddModal(false);
+  // ✅ ここから貼り付け
+  const addItem = async (newItem) => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const itemData = {
+        user_id: user.id,
+        name: newItem.name,
+        brand_name: newItem.brandName || '',
+        jan_code: newItem.janCode || '',
+        icon: newItem.icon || 'package',
+        mode: newItem.mode,
+        base_days: newItem.estimatedDays || 30,
+        current_factor: 1.0,
+        adult_male: newItem.users?.adultMale || 0,
+        adult_female: newItem.users?.adultFemale || 0,
+        child_male: newItem.users?.childMale || 0,
+        child_female: newItem.users?.childFemale || 0,
+        opened_at: newItem.mode === 'consumable' ? new Date().toISOString() : null,
+        expiry_date: newItem.expiryDate || null,
+        stock_count: 1,
+        is_archived: false
+      };
+
+      const { data: inserted, error } = await supabase
+        .from('items')
+        .insert([itemData])
+        .select();
+
+      if (error) throw error;
+
+      if (inserted && inserted[0]) {
+        const i = inserted[0];
+        const formattedNewItem = {
+          id: i.id,
+          name: i.name,
+          brandName: i.brand_name,
+          janCode: i.jan_code,
+          icon: i.icon,
+          mode: i.mode,
+          estimatedDays: i.base_days,
+          correctionFactor: i.current_factor,
+          openedDate: i.opened_at,
+          expiry_date: i.expiry_date,
+          users: {
+            adultMale: i.adult_male,
+            adultFemale: i.adult_female,
+            childMale: i.child_male,
+            childFemale: i.child_female
+          }
+        };
+
+        setData(prev => ({
+          ...prev,
+          items: [formattedNewItem, ...prev.items]
+        }));
+      }
+      setShowAddModal(false);
+    } catch (e) {
+      console.error("アイテム追加エラー:", e.message);
+      alert("保存に失敗しました。SQLが正しく実行されているか確認してください。");
+    }
   };
+  // ✅ ここまで貼り付け
 
   const updateItem = (updatedItem) => {
     setData(prev => ({ ...prev, items: prev.items.map(i => i.id === updatedItem.id ? updatedItem : i) }));
@@ -195,15 +271,15 @@ export default function Home() {
 
       {/* 設定画面オーバーレイ */}
       {currentTab === 'settings' && (
-        <div className="fixed inset-0 z-50 bg-white overflow-y-auto">
-          <SettingsTab 
-            data={data} 
-            updateSettings={updateSettings} 
-            handleLogout={handleLogout} 
-            onBack={() => setCurrentTab('home')} 
-          />
-        </div>
-      )}
+  <div className="fixed inset-0 z-50 bg-white overflow-y-auto">
+    <SettingsTab 
+      data={data} 
+      updateSettings={updateSettings} 
+      handleLogout={handleLogout} 
+      onBack={() => setCurrentTab('home')} 
+    />
+  </div>
+)}
 
       {/* 各種モーダル */}
       {showAddModal && <AddItemModal onClose={() => setShowAddModal(false)} onAdd={addItem} presets={PRESETS} initialMode={initialMode} />}
@@ -236,22 +312,85 @@ function NotificationPanel({ items, onClose, calcRemainingDays }) {
   );
 }
 
-// 詳細表示用（簡易版）
 function DetailModal({ item, onClose, onFinished, onDelete, calcRemainingDays, calcEndDate, getRemainingPercent, calcTotalDays }) {
   const remaining = calcRemainingDays(item);
+  const remainingPercent = getRemainingPercent(item);
   const urgency = getUrgencyColor(remaining / calcTotalDays(item));
   const Icon = ICONS[item.icon] || Package;
+
   return (
-    <BottomSheet onClose={onClose} title="詳細">
-      <div className="p-6">
-        <div className="flex items-center gap-4 mb-6">
-          <div className="w-16 h-16 rounded-2xl flex items-center justify-center bg-slate-50"><Icon size={32} className="text-slate-400" /></div>
-          <div className="flex-1"><h2 className="text-xl font-bold text-slate-800">{item.name}</h2><p className="text-sm text-slate-400">{item.mode === 'consumable' ? '消耗品' : '期限付き'}</p></div>
-          <div className="text-right"><p className="text-3xl font-black" style={{ color: urgency.color }}>{remaining}日</p></div>
-        </div>
-        <div className="flex gap-2">
-          <button onClick={() => onFinished(item.id)} className="flex-1 py-4 bg-emerald-500 text-white rounded-2xl font-bold">使い終わった</button>
-          <button onClick={() => onDelete(item.id)} className="p-4 bg-rose-50 text-rose-500 rounded-2xl"><Trash2 size={20} /></button>
+    <BottomSheet onClose={onClose} title="詳細情報">
+      <div className="p-6 sm:p-10 max-w-4xl mx-auto">
+        <div className="flex flex-col md:flex-row gap-8 items-start">
+          
+          {/* 左側：大きなアイコンとステータス */}
+          <div className="w-full md:w-1/3 space-y-4">
+            <div 
+              className="w-24 h-24 sm:w-32 sm:h-32 rounded-[2.5rem] flex items-center justify-center mx-auto shadow-inner"
+              style={{ background: `${urgency.color}15` }}
+            >
+              <Icon size={48} style={{ color: urgency.color }} />
+            </div>
+            <div className="text-center">
+              <h2 className="text-2xl font-black text-slate-800">{item.name}</h2>
+              <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mt-1">
+                {item.mode === 'consumable' ? 'Consumable' : 'Expiry'}
+              </p>
+            </div>
+          </div>
+
+          {/* 右側：詳細データと進捗バー */}
+          <div className="flex-1 w-full space-y-6">
+            <div className="flex justify-between items-end">
+              <div>
+                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">残り日数</p>
+                <p className="text-4xl font-black" style={{ color: urgency.color }}>
+                  {remaining <= 0 ? '0' : remaining}<span className="text-sm ml-1 font-bold">日</span>
+                </p>
+              </div>
+              <div className="text-right text-xs font-bold text-slate-500">
+                予測終了日: {formatDateFull(calcEndDate(item).toISOString())}
+              </div>
+            </div>
+
+            {/* 復活：リッチなグラデーション進捗バー */}
+            <div className="space-y-2">
+              <div className="h-4 bg-slate-100 rounded-full overflow-hidden shadow-inner">
+                <div 
+                  className="h-full rounded-full transition-all duration-1000 ease-out" 
+                  style={{ width: `${remainingPercent}%`, background: urgency.gradient }} 
+                />
+              </div>
+              <div className="flex justify-between text-[10px] font-black text-slate-300 uppercase">
+                <span>Start</span>
+                <span>{Math.round(remainingPercent)}% Remaining</span>
+              </div>
+            </div>
+
+            {/* 復活：詳細な使用者情報 */}
+            <div className="bg-slate-50 rounded-[2rem] p-5 border border-slate-100">
+              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">使用者内訳</p>
+              <div className="text-sm font-bold text-slate-600">
+                {formatUsers(item.users)}
+              </div>
+            </div>
+
+            {/* アクションボタン */}
+            <div className="flex gap-3 pt-4">
+              <button 
+                onClick={() => onFinished(item.id)} 
+                className="flex-1 py-4 bg-slate-800 text-white rounded-2xl font-black tracking-widest shadow-xl hover:bg-slate-700 transition-all active:scale-[0.98]"
+              >
+                使い終わった
+              </button>
+              <button 
+                onClick={() => onDelete(item.id)} 
+                className="p-4 bg-rose-50 text-rose-500 rounded-2xl hover:bg-rose-100 transition-colors"
+              >
+                <Trash2 size={24} />
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </BottomSheet>
