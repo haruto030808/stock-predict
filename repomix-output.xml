@@ -1,0 +1,776 @@
+This file is a merged representation of the entire codebase, combined into a single document by Repomix.
+
+<file_summary>
+This section contains a summary of this file.
+
+<purpose>
+This file contains a packed representation of the entire repository's contents.
+It is designed to be easily consumable by AI systems for analysis, code review,
+or other automated processes.
+</purpose>
+
+<file_format>
+The content is organized as follows:
+1. This summary section
+2. Repository information
+3. Directory structure
+4. Repository files (if enabled)
+5. Multiple file entries, each consisting of:
+  - File path as an attribute
+  - Full contents of the file
+</file_format>
+
+<usage_guidelines>
+- This file should be treated as read-only. Any changes should be made to the
+  original repository files, not this packed version.
+- When processing this file, use the file path to distinguish
+  between different files in the repository.
+- Be aware that this file may contain sensitive information. Handle it with
+  the same level of security as you would the original repository.
+</usage_guidelines>
+
+<notes>
+- Some files may have been excluded based on .gitignore rules and Repomix's configuration
+- Binary files are not included in this packed representation. Please refer to the Repository Structure section for a complete list of file paths, including binary files
+- Files matching patterns in .gitignore are excluded
+- Files matching default ignore patterns are excluded
+- Files are sorted by Git change count (files with more changes are at the bottom)
+</notes>
+
+</file_summary>
+
+<directory_structure>
+.gitignore
+eslint.config.js
+index.html
+package.json
+postcss.config.js
+public/vite.svg
+README.md
+src/App.css
+src/App.jsx
+src/assets/react.svg
+src/index.css
+src/lib/supabase.js
+src/main.jsx
+src/pages/Home.jsx
+src/pages/Login.jsx
+tailwind.config.js
+vite.config.js
+</directory_structure>
+
+<files>
+This section contains the contents of the repository's files.
+
+<file path=".gitignore">
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+node_modules
+dist
+dist-ssr
+*.local
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+</file>
+
+<file path="eslint.config.js">
+import js from '@eslint/js'
+import globals from 'globals'
+import reactHooks from 'eslint-plugin-react-hooks'
+import reactRefresh from 'eslint-plugin-react-refresh'
+import { defineConfig, globalIgnores } from 'eslint/config'
+
+export default defineConfig([
+  globalIgnores(['dist']),
+  {
+    files: ['**/*.{js,jsx}'],
+    extends: [
+      js.configs.recommended,
+      reactHooks.configs.flat.recommended,
+      reactRefresh.configs.vite,
+    ],
+    languageOptions: {
+      ecmaVersion: 2020,
+      globals: globals.browser,
+      parserOptions: {
+        ecmaVersion: 'latest',
+        ecmaFeatures: { jsx: true },
+        sourceType: 'module',
+      },
+    },
+    rules: {
+      'no-unused-vars': ['error', { varsIgnorePattern: '^[A-Z_]' }],
+    },
+  },
+])
+</file>
+
+<file path="index.html">
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>stock-predict</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>
+</file>
+
+<file path="postcss.config.js">
+export default {
+    plugins: {
+      "@tailwindcss/postcss": {},
+    }
+  }
+</file>
+
+<file path="public/vite.svg">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" class="iconify iconify--logos" width="31.88" height="32" preserveAspectRatio="xMidYMid meet" viewBox="0 0 256 257"><defs><linearGradient id="IconifyId1813088fe1fbc01fb466" x1="-.828%" x2="57.636%" y1="7.652%" y2="78.411%"><stop offset="0%" stop-color="#41D1FF"></stop><stop offset="100%" stop-color="#BD34FE"></stop></linearGradient><linearGradient id="IconifyId1813088fe1fbc01fb467" x1="43.376%" x2="50.316%" y1="2.242%" y2="89.03%"><stop offset="0%" stop-color="#FFEA83"></stop><stop offset="8.333%" stop-color="#FFDD35"></stop><stop offset="100%" stop-color="#FFA800"></stop></linearGradient></defs><path fill="url(#IconifyId1813088fe1fbc01fb466)" d="M255.153 37.938L134.897 252.976c-2.483 4.44-8.862 4.466-11.382.048L.875 37.958c-2.746-4.814 1.371-10.646 6.827-9.67l120.385 21.517a6.537 6.537 0 0 0 2.322-.004l117.867-21.483c5.438-.991 9.574 4.796 6.877 9.62Z"></path><path fill="url(#IconifyId1813088fe1fbc01fb467)" d="M185.432.063L96.44 17.501a3.268 3.268 0 0 0-2.634 3.014l-5.474 92.456a3.268 3.268 0 0 0 3.997 3.378l24.777-5.718c2.318-.535 4.413 1.507 3.936 3.838l-7.361 36.047c-.495 2.426 1.782 4.5 4.151 3.78l15.304-4.649c2.372-.72 4.652 1.36 4.15 3.788l-11.698 56.621c-.732 3.542 3.979 5.473 5.943 2.437l1.313-2.028l72.516-144.72c1.215-2.423-.88-5.186-3.54-4.672l-25.505 4.922c-2.396.462-4.435-1.77-3.759-4.114l16.646-57.705c.677-2.35-1.37-4.583-3.769-4.113Z"></path></svg>
+</file>
+
+<file path="README.md">
+# React + Vite
+
+This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+
+Currently, two official plugins are available:
+
+- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
+- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+
+## React Compiler
+
+The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+
+## Expanding the ESLint configuration
+
+If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+</file>
+
+<file path="src/App.css">
+#root {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+}
+
+.logo {
+  height: 6em;
+  padding: 1.5em;
+  will-change: filter;
+  transition: filter 300ms;
+}
+.logo:hover {
+  filter: drop-shadow(0 0 2em #646cffaa);
+}
+.logo.react:hover {
+  filter: drop-shadow(0 0 2em #61dafbaa);
+}
+
+@keyframes logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  a:nth-of-type(2) .logo {
+    animation: logo-spin infinite 20s linear;
+  }
+}
+
+.card {
+  padding: 2em;
+}
+
+.read-the-docs {
+  color: #888;
+}
+</file>
+
+<file path="src/assets/react.svg">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" class="iconify iconify--logos" width="35.93" height="32" preserveAspectRatio="xMidYMid meet" viewBox="0 0 256 228"><path fill="#00D8FF" d="M210.483 73.824a171.49 171.49 0 0 0-8.24-2.597c.465-1.9.893-3.777 1.273-5.621c6.238-30.281 2.16-54.676-11.769-62.708c-13.355-7.7-35.196.329-57.254 19.526a171.23 171.23 0 0 0-6.375 5.848a155.866 155.866 0 0 0-4.241-3.917C100.759 3.829 77.587-4.822 63.673 3.233C50.33 10.957 46.379 33.89 51.995 62.588a170.974 170.974 0 0 0 1.892 8.48c-3.28.932-6.445 1.924-9.474 2.98C17.309 83.498 0 98.307 0 113.668c0 15.865 18.582 31.778 46.812 41.427a145.52 145.52 0 0 0 6.921 2.165a167.467 167.467 0 0 0-2.01 9.138c-5.354 28.2-1.173 50.591 12.134 58.266c13.744 7.926 36.812-.22 59.273-19.855a145.567 145.567 0 0 0 5.342-4.923a168.064 168.064 0 0 0 6.92 6.314c21.758 18.722 43.246 26.282 56.54 18.586c13.731-7.949 18.194-32.003 12.4-61.268a145.016 145.016 0 0 0-1.535-6.842c1.62-.48 3.21-.974 4.76-1.488c29.348-9.723 48.443-25.443 48.443-41.52c0-15.417-17.868-30.326-45.517-39.844Zm-6.365 70.984c-1.4.463-2.836.91-4.3 1.345c-3.24-10.257-7.612-21.163-12.963-32.432c5.106-11 9.31-21.767 12.459-31.957c2.619.758 5.16 1.557 7.61 2.4c23.69 8.156 38.14 20.213 38.14 29.504c0 9.896-15.606 22.743-40.946 31.14Zm-10.514 20.834c2.562 12.94 2.927 24.64 1.23 33.787c-1.524 8.219-4.59 13.698-8.382 15.893c-8.067 4.67-25.32-1.4-43.927-17.412a156.726 156.726 0 0 1-6.437-5.87c7.214-7.889 14.423-17.06 21.459-27.246c12.376-1.098 24.068-2.894 34.671-5.345a134.17 134.17 0 0 1 1.386 6.193ZM87.276 214.515c-7.882 2.783-14.16 2.863-17.955.675c-8.075-4.657-11.432-22.636-6.853-46.752a156.923 156.923 0 0 1 1.869-8.499c10.486 2.32 22.093 3.988 34.498 4.994c7.084 9.967 14.501 19.128 21.976 27.15a134.668 134.668 0 0 1-4.877 4.492c-9.933 8.682-19.886 14.842-28.658 17.94ZM50.35 144.747c-12.483-4.267-22.792-9.812-29.858-15.863c-6.35-5.437-9.555-10.836-9.555-15.216c0-9.322 13.897-21.212 37.076-29.293c2.813-.98 5.757-1.905 8.812-2.773c3.204 10.42 7.406 21.315 12.477 32.332c-5.137 11.18-9.399 22.249-12.634 32.792a134.718 134.718 0 0 1-6.318-1.979Zm12.378-84.26c-4.811-24.587-1.616-43.134 6.425-47.789c8.564-4.958 27.502 2.111 47.463 19.835a144.318 144.318 0 0 1 3.841 3.545c-7.438 7.987-14.787 17.08-21.808 26.988c-12.04 1.116-23.565 2.908-34.161 5.309a160.342 160.342 0 0 1-1.76-7.887Zm110.427 27.268a347.8 347.8 0 0 0-7.785-12.803c8.168 1.033 15.994 2.404 23.343 4.08c-2.206 7.072-4.956 14.465-8.193 22.045a381.151 381.151 0 0 0-7.365-13.322Zm-45.032-43.861c5.044 5.465 10.096 11.566 15.065 18.186a322.04 322.04 0 0 0-30.257-.006c4.974-6.559 10.069-12.652 15.192-18.18ZM82.802 87.83a323.167 323.167 0 0 0-7.227 13.238c-3.184-7.553-5.909-14.98-8.134-22.152c7.304-1.634 15.093-2.97 23.209-3.984a321.524 321.524 0 0 0-7.848 12.897Zm8.081 65.352c-8.385-.936-16.291-2.203-23.593-3.793c2.26-7.3 5.045-14.885 8.298-22.6a321.187 321.187 0 0 0 7.257 13.246c2.594 4.48 5.28 8.868 8.038 13.147Zm37.542 31.03c-5.184-5.592-10.354-11.779-15.403-18.433c4.902.192 9.899.29 14.978.29c5.218 0 10.376-.117 15.453-.343c-4.985 6.774-10.018 12.97-15.028 18.486Zm52.198-57.817c3.422 7.8 6.306 15.345 8.596 22.52c-7.422 1.694-15.436 3.058-23.88 4.071a382.417 382.417 0 0 0 7.859-13.026a347.403 347.403 0 0 0 7.425-13.565Zm-16.898 8.101a358.557 358.557 0 0 1-12.281 19.815a329.4 329.4 0 0 1-23.444.823c-7.967 0-15.716-.248-23.178-.732a310.202 310.202 0 0 1-12.513-19.846h.001a307.41 307.41 0 0 1-10.923-20.627a310.278 310.278 0 0 1 10.89-20.637l-.001.001a307.318 307.318 0 0 1 12.413-19.761c7.613-.576 15.42-.876 23.31-.876H128c7.926 0 15.743.303 23.354.883a329.357 329.357 0 0 1 12.335 19.695a358.489 358.489 0 0 1 11.036 20.54a329.472 329.472 0 0 1-11 20.722Zm22.56-122.124c8.572 4.944 11.906 24.881 6.52 51.026c-.344 1.668-.73 3.367-1.15 5.09c-10.622-2.452-22.155-4.275-34.23-5.408c-7.034-10.017-14.323-19.124-21.64-27.008a160.789 160.789 0 0 1 5.888-5.4c18.9-16.447 36.564-22.941 44.612-18.3ZM128 90.808c12.625 0 22.86 10.235 22.86 22.86s-10.235 22.86-22.86 22.86s-22.86-10.235-22.86-22.86s10.235-22.86 22.86-22.86Z"></path></svg>
+</file>
+
+<file path="src/lib/supabase.js">
+import { createClient } from '@supabase/supabase-js'
+
+// Supabaseの管理画面（Settings > API）にあるURLとAnon Keyをここに入れます
+const supabaseUrl = 'https://tzztsbnarrjebpejkvvy.supabase.co'
+const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR6enRzYm5hcnJqZWJwZWprdnZ5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYwNDYxNTUsImV4cCI6MjA4MTYyMjE1NX0.AIYKbHGVUmt80KfKF0n2lcKeqho2vHB3XbwdY_OPzjA'
+
+export const supabase = createClient(supabaseUrl, supabaseAnonKey)
+</file>
+
+<file path="src/main.jsx">
+import { StrictMode } from 'react'
+import { createRoot } from 'react-dom/client'
+import './index.css'
+import App from './App.jsx'
+
+createRoot(document.getElementById('root')).render(
+  <StrictMode>
+    <App />
+  </StrictMode>,
+)
+</file>
+
+<file path="src/pages/Home.jsx">
+import { useState, useEffect, useRef } from 'react';
+import { supabase } from '../lib/supabase';
+// HomeをHomeIconとしてインポートすることで名前の衝突を防ぐ
+import { Home as HomeIcon, Plus, Settings, Package, Calendar, Check, Droplets, Sparkles, X, Shirt, Heart, Utensils, Zap, Wind, Scissors, Eye, Smile, ChevronRight, Edit3, Trash2, RotateCcw, Mail, LogOut, User, ChevronLeft, Bell, Brush, Bath, Baby, Car, Glasses, Flower2, Sun, Moon, Apple, Cookie, Milk, Beer, ShowerHead, SprayCan, Camera, AlertTriangle, Trash, KeyRound, CalendarDays, Dog, ExternalLink } from 'lucide-react';
+
+const ICONS = { package: Package, droplets: Droplets, sparkles: Sparkles, calendar: Calendar, shirt: Shirt, heart: Heart, utensils: Utensils, zap: Zap, wind: Wind, scissors: Scissors, eye: Eye, smile: Smile, brush: Brush, bath: Bath, baby: Baby, car: Car, glasses: Glasses, flower: Flower2, sun: Sun, moon: Moon, apple: Apple, cookie: Cookie, milk: Milk, beer: Beer, shower: ShowerHead, spray: SprayCan, dog: Dog };
+const ICON_LIST = ['droplets', 'sparkles', 'heart', 'smile', 'brush', 'bath', 'baby', 'shirt', 'utensils', 'zap', 'wind', 'scissors', 'eye', 'car', 'glasses', 'flower', 'sun', 'moon', 'apple', 'cookie', 'milk', 'beer', 'shower', 'spray', 'dog', 'package', 'calendar'];
+const UNITS = { ml: 'ml', g: 'g', roll: 'ロール', piece: '個', box: '箱', sheet: '枚' };
+const PRESETS = [
+  { name: 'シャンプー', icon: 'droplets', baseDays: 60, baseAmount: 500, unit: 'ml' },
+  { name: 'ボディソープ', icon: 'bath', baseDays: 45, baseAmount: 500, unit: 'ml' },
+  { name: '洗顔料', icon: 'smile', baseDays: 40, baseAmount: 120, unit: 'g' },
+  { name: '化粧水', icon: 'heart', baseDays: 60, baseAmount: 200, unit: 'ml' },
+  { name: '洗濯洗剤', icon: 'sparkles', baseDays: 45, baseAmount: 900, unit: 'g' },
+  { name: '食器用洗剤', icon: 'sparkles', baseDays: 30, baseAmount: 300, unit: 'ml' },
+  { name: '歯磨き粉', icon: 'brush', baseDays: 30, baseAmount: 140, unit: 'g' },
+  { name: 'トイレットペーパー', icon: 'package', baseDays: 30, baseAmount: 12, unit: 'roll' },
+  { name: 'ティッシュ', icon: 'package', baseDays: 20, baseAmount: 5, unit: 'box' },
+  { name: 'ペットフード', icon: 'dog', baseDays: 30, baseAmount: 3000, unit: 'g' },
+];
+
+const getToday = () => { const d = new Date(); d.setHours(0,0,0,0); return d; };
+const getTodayStr = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; };
+const formatDateJP = (date) => { const d = new Date(date); const days = ['日','月','火','水','木','金','土']; return `${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日（${days[d.getDay()]}）`; };
+const formatDate = (dateStr) => { const d = new Date(dateStr); return `${d.getMonth()+1}/${d.getDate()}`; };
+const formatDateFull = (dateStr) => { const d = new Date(dateStr); return `${d.getFullYear()}/${d.getMonth()+1}/${d.getDate()}`; };
+const daysAgo = (n) => { const d = new Date(); d.setDate(d.getDate() - n); return d.toISOString().split('T')[0]; };
+const daysLater = (n) => { const d = new Date(); d.setDate(d.getDate() + n); return d.toISOString().split('T')[0]; };
+const formatAmount = (amount, unit) => { if (!amount) return '未設定'; return `${amount}${UNITS[unit] || unit || ''}`; };
+
+const initialData = {
+  items: [
+    { id: '1', name: 'シャンプー', mode: 'consumable', icon: 'droplets', openedDate: daysAgo(25), estimatedDays: 45, correctionFactor: 1.0, users: { adultMale: 1, adultFemale: 1, childMale: 0, childFemale: 0 }, amount: 500, unit: 'ml', createdDate: daysAgo(25) },
+    { id: '2', name: '化粧水', mode: 'consumable', icon: 'heart', openedDate: daysAgo(40), estimatedDays: 60, correctionFactor: 1.0, users: { adultMale: 0, adultFemale: 1, childMale: 0, childFemale: 0 }, amount: 200, unit: 'ml', createdDate: daysAgo(40) },
+  ],
+  user: { name: 'ユーザー', email: '' },
+  settings: { emailNotification: true, appNotification: true, notifyDaysBefore: 3 }
+};
+
+const getUrgencyColor = (ratio) => {
+  if (ratio <= 0) return { color: '#DC2626', gradient: 'linear-gradient(to right, #FCA5A5, #DC2626)' };
+  if (ratio <= 0.1) return { color: '#DC2626', gradient: 'linear-gradient(to right, #FCA5A5, #DC2626)' };
+  if (ratio <= 0.2) return { color: '#EA580C', gradient: 'linear-gradient(to right, #FDBA74, #EA580C)' };
+  if (ratio <= 0.35) return { color: '#F59E0B', gradient: 'linear-gradient(to right, #FCD34D, #F59E0B)' };
+  if (ratio <= 0.5) return { color: '#EAB308', gradient: 'linear-gradient(to right, #FDE047, #EAB308)' };
+  return { color: '#86A397', gradient: 'linear-gradient(to right, #A7C4BC, #86A397)' };
+};
+
+const formatUsers = (users) => {
+  if (!users) return '未設定';
+  const parts = [];
+  if (users.adultMale > 0) parts.push(`男性${users.adultMale}人`);
+  if (users.adultFemale > 0) parts.push(`女性${users.adultFemale}人`);
+  if (users.childMale > 0) parts.push(`男の子${users.childMale}人`);
+  if (users.childFemale > 0) parts.push(`女の子${users.childFemale}人`);
+  return parts.length > 0 ? parts.join('、') : '未設定';
+};
+function BottomSheet({ children, onClose, title, showBack, onBack }) {
+  const sheetRef = useRef(null);
+  const [dragY, setDragY] = useState(0);
+  const [isDragging, setIsDragging] = useState(false);
+  const startY = useRef(0);
+  useEffect(() => { document.body.style.overflow = 'hidden'; return () => { document.body.style.overflow = ''; }; }, []);
+  const handleTouchStart = (e) => { startY.current = e.touches[0].clientY; setIsDragging(true); };
+  const handleTouchMove = (e) => { if (!isDragging) return; const diff = e.touches[0].clientY - startY.current; if (diff > 0) setDragY(diff); };
+  const handleTouchEnd = () => { setIsDragging(false); if (dragY > 100) onClose(); else setDragY(0); };
+  return (
+    <div className="fixed inset-0 z-50 max-w-md mx-auto">
+      <div className="absolute inset-0 bg-black/50" style={{ opacity: Math.max(0, 1 - dragY / 300) }} onClick={onClose} />
+      <div ref={sheetRef} className="absolute inset-x-0 bottom-0 bg-slate-50 rounded-t-3xl max-h-[90%] flex flex-col transition-transform duration-200" style={{ transform: `translateY(${dragY}px)` }}>
+        <div className="flex-shrink-0 pt-3 pb-2 cursor-grab" onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={handleTouchEnd}>
+          <div className="w-10 h-1 bg-gray-300 rounded-full mx-auto mb-2" />
+          <div className="flex items-center justify-between px-4">
+            {showBack ? <button onClick={onBack} className="p-2 -ml-2 text-gray-500"><ChevronLeft size={22} /></button> : <div className="w-10" />}
+            <h2 className="text-lg font-semibold text-slate-700">{title}</h2>
+            <button onClick={onClose} className="p-2 -mr-2 text-gray-400"><X size={20} /></button>
+          </div>
+        </div>
+        <div className="flex-1 overflow-y-auto overscroll-contain">{children}</div>
+      </div>
+    </div>
+  );
+}
+
+function Toggle({ checked, onChange }) {
+  return (
+    <button onClick={() => onChange(!checked)} className={`w-12 h-7 rounded-full transition-colors ${checked ? 'bg-emerald-500' : 'bg-gray-300'}`}>
+      <div className={`w-5 h-5 bg-white rounded-full shadow transition-transform mx-1 ${checked ? 'translate-x-5' : 'translate-x-0'}`} />
+    </button>
+  );
+}
+
+export default function Home() {
+  const [data, setData] = useState(initialData);
+  const [currentTab, setCurrentTab] = useState('home');
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [detailItem, setDetailItem] = useState(null);
+  const [editItem, setEditItem] = useState(null);
+  const [settingsPage, setSettingsPage] = useState('main');
+  const [showNotification, setShowNotification] = useState(false);
+  const [reuseModal, setReuseModal] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let isMounted = true;
+    async function loadData() {
+      try {
+        // 1. まず手元のスマホ（PC）に保存されているデータを出す
+        const savedData = localStorage.getItem('stockpredict-v11');
+        let loadedData = savedData ? JSON.parse(savedData) : initialData;
+
+        // 2. Googleログインしたユーザー情報を「そーっと」取りに行く
+        // ここでエラーが起きても catch に飛ばず、処理を続けさせるのがミソです
+        const { data: { user }, error: userError } = await supabase.auth.getUser();
+
+        if (user && !userError && isMounted) {
+          // 成功したら、設定画面の「ユーザー名」や「メール」を本物にする
+          loadedData.user = { 
+            name: user.user_metadata.full_name || 'ユーザー', 
+            email: user.email 
+          };
+        }
+        
+        if (isMounted) setData(loadedData);
+      } catch (e) {
+        // もしデータが壊れていたり通信が致命的に死んでも、初期画面だけは出す
+        console.error("Critical Load Error:", e);
+        if (isMounted) setData(initialData);
+      } finally {
+        // 何が起きても最後に必ず「読み込み中...」の幕を下ろす
+        if (isMounted) setLoading(false);
+      }
+    }
+
+    loadData();
+    return () => { isMounted = false; };
+  }, []);
+
+  useEffect(() => {
+    if (!loading) localStorage.setItem('stockpredict-v11', JSON.stringify(data));
+  }, [data, loading]);
+
+  const calcTotalDays = (item) => {
+    if (item.mode === 'expiry') { const created = new Date(item.createdDate || getTodayStr()); const expiry = new Date(item.expiryDate); return Math.max(Math.ceil((expiry - created) / 86400000), 1); }
+    return Math.round(item.estimatedDays * item.correctionFactor);
+  };
+  const calcEndDate = (item) => { if (item.mode === 'expiry') return new Date(item.expiryDate); const opened = new Date(item.openedDate); opened.setHours(0,0,0,0); return new Date(opened.getTime() + calcTotalDays(item) * 86400000); };
+  const calcRemainingDays = (item) => { const end = calcEndDate(item); end.setHours(0,0,0,0); return Math.ceil((end - getToday()) / 86400000); };
+  const getRemainingPercent = (item) => Math.max(0, Math.min(100, (calcRemainingDays(item) / calcTotalDays(item)) * 100));
+
+  const handleFinished = (itemId) => { setReuseModal(data.items.find(i => i.id === itemId)); setDetailItem(null); };
+  const handleReuseWithSettings = (item, newSettings) => { const actualDays = Math.max(1, Math.round((getToday() - new Date(item.openedDate)) / 86400000)); const newFactor = Math.max(0.1, item.correctionFactor * (actualDays / calcTotalDays(item))); setData(prev => ({ ...prev, items: prev.items.map(i => i.id === item.id ? { ...i, openedDate: getTodayStr(), correctionFactor: newFactor, ...newSettings } : i) })); setReuseModal(null); };
+  const handleReuseKeep = (item) => { const actualDays = Math.max(1, Math.round((getToday() - new Date(item.openedDate)) / 86400000)); const newFactor = Math.max(0.1, item.correctionFactor * (actualDays / calcTotalDays(item))); setData(prev => ({ ...prev, items: prev.items.map(i => i.id === item.id ? { ...i, openedDate: getTodayStr(), correctionFactor: newFactor } : i) })); setReuseModal(null); };
+  const handleStillRemaining = (itemId) => { setData(prev => ({ ...prev, items: prev.items.map(item => item.id === itemId ? { ...item, correctionFactor: item.correctionFactor * 1.15 } : item) })); setDetailItem(null); };
+  const addItem = (newItem) => { setData(prev => ({ ...prev, items: [...prev.items, { id: Date.now().toString(), ...newItem, openedDate: newItem.mode === 'consumable' ? getTodayStr() : undefined, createdDate: getTodayStr(), correctionFactor: 1.0 }] })); setShowAddModal(false); };
+  const updateItem = (updatedItem) => { setData(prev => ({ ...prev, items: prev.items.map(i => i.id === updatedItem.id ? updatedItem : i) })); setEditItem(null); setDetailItem(null); };
+  const deleteItem = (itemId) => { setData(prev => ({ ...prev, items: prev.items.filter(item => item.id !== itemId) })); setDetailItem(null); };
+  const updateSettings = (newSettings) => { setData(prev => ({ ...prev, settings: { ...prev.settings, ...newSettings } })); };
+  const handleLogout = async () => { await supabase.auth.signOut(); };
+
+  const consumables = data.items.filter(i => i.mode === 'consumable').sort((a, b) => calcRemainingDays(a) - calcRemainingDays(b));
+  const expiries = data.items.filter(i => i.mode === 'expiry').sort((a, b) => calcRemainingDays(a) - calcRemainingDays(b));
+  const nearEndItems = data.items.filter(i => { const r = calcRemainingDays(i); return r > 0 && r <= (data.settings?.notifyDaysBefore || 3); });
+
+  if (loading) return <div className="min-h-screen bg-gray-50 flex items-center justify-center"><div className="text-gray-400 font-medium">読み込み中...</div></div>;
+
+  return (
+    <div className="min-h-screen bg-slate-100 pb-24 max-w-md mx-auto relative">
+      {currentTab === 'home' && (
+        <>
+          <header className="sticky top-0 z-20 px-5 pt-4 pb-3" style={{ background: 'linear-gradient(135deg, #4A5568 0%, #64748B 100%)' }}>
+            <div className="flex items-center justify-between mb-1">
+              <div className="w-10" />
+              <p className="text-sm font-medium text-white/80">{formatDateJP(new Date())}</p>
+              <button onClick={() => setShowNotification(true)} className="w-10 h-10 flex items-center justify-center text-white/80 hover:text-white relative">
+                <Bell size={22} />
+                {nearEndItems.length > 0 && <span className="absolute top-0 right-0 w-5 h-5 bg-red-500 rounded-full text-white text-xs flex items-center justify-center font-bold">{nearEndItems.length}</span>}
+              </button>
+            </div>
+            <div className="text-center pb-1"><h1 className="text-2xl font-bold tracking-tight text-white">Stock<span className="text-emerald-300">Predict</span></h1></div>
+          </header>
+          <div className="p-5">
+            {consumables.length > 0 && (
+              <section className="mb-6">
+                <div className="flex items-center gap-2 mb-3"><div className="w-1.5 h-4 rounded-full" style={{ background: 'linear-gradient(to bottom, #86A397, #6B8E7D)' }} /><h2 className="text-sm font-medium text-slate-600">消耗品</h2><span className="text-xs text-gray-400 ml-1">{consumables.length}件</span></div>
+                <div className="space-y-2.5">{consumables.map(item => <ItemCard key={item.id} item={item} calcRemainingDays={calcRemainingDays} getRemainingPercent={getRemainingPercent} calcEndDate={calcEndDate} calcTotalDays={calcTotalDays} onClick={() => setDetailItem(item)} />)}</div>
+              </section>
+            )}
+            {expiries.length > 0 && (
+              <section className="mb-6">
+                <div className="flex items-center gap-2 mb-3"><div className="w-1.5 h-4 rounded-full" style={{ background: 'linear-gradient(to bottom, #64748B, #475569)' }} /><h2 className="text-sm font-medium text-slate-600">期限付き</h2><span className="text-xs text-gray-400 ml-1">{expiries.length}件</span></div>
+                <div className="space-y-2.5">{expiries.map(item => <ItemCard key={item.id} item={item} calcRemainingDays={calcRemainingDays} getRemainingPercent={getRemainingPercent} calcEndDate={calcEndDate} calcTotalDays={calcTotalDays} onClick={() => setDetailItem(item)} />)}</div>
+              </section>
+            )}
+            {data.items.length === 0 && <div className="text-center py-20 text-gray-400"><div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-white flex items-center justify-center shadow-sm"><Package size={32} className="opacity-40" /></div><p className="font-medium">アイテムがありません</p><p className="text-xs mt-1">下の追加ボタンから登録</p></div>}
+          </div>
+        </>
+      )}
+      {currentTab === 'settings' && (
+        <div className="min-h-screen">
+          <header className="sticky top-0 z-20 px-5 pt-4 pb-3" style={{ background: 'linear-gradient(135deg, #4A5568 0%, #64748B 100%)' }}>
+            {settingsPage !== 'main' && <button onClick={() => setSettingsPage('main')} className="absolute left-3 top-4 p-2 text-white/80"><ChevronLeft size={22} /></button>}
+            <h1 className="text-xl font-semibold text-white text-center">{settingsPage === 'main' ? '設定' : settingsPage === 'contact' ? 'お問い合わせ' : settingsPage === 'notification' ? '通知設定' : '登録情報'}</h1>
+          </header>
+          <div className="p-5">
+            {settingsPage === 'main' && (<><div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden"><div className="p-4 border-b border-gray-100 flex items-center gap-3"><div className="w-12 h-12 rounded-full flex items-center justify-center text-white font-semibold text-lg" style={{ background: 'linear-gradient(135deg, #86A397, #6B8E7D)' }}>{data.user.name.charAt(0)}</div><div><p className="font-medium text-slate-700">{data.user.name}</p><p className="text-xs text-gray-400">{data.user.email}</p></div></div><button onClick={() => setSettingsPage('notification')} className="w-full p-4 flex items-center gap-3 text-left hover:bg-gray-50 border-b border-gray-100"><div className="w-10 h-10 rounded-xl bg-amber-50 flex items-center justify-center"><Bell size={18} className="text-amber-500" /></div><span className="flex-1 text-sm text-slate-600">通知設定</span><ChevronRight size={18} className="text-gray-300" /></button><button onClick={() => setSettingsPage('contact')} className="w-full p-4 flex items-center gap-3 text-left hover:bg-gray-50 border-b border-gray-100"><div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center"><Mail size={18} className="text-blue-500" /></div><span className="flex-1 text-sm text-slate-600">お問い合わせ</span><ChevronRight size={18} className="text-gray-300" /></button><button onClick={() => setSettingsPage('account')} className="w-full p-4 flex items-center gap-3 text-left hover:bg-gray-50 border-b border-gray-100"><div className="w-10 h-10 rounded-xl bg-purple-50 flex items-center justify-center"><User size={18} className="text-purple-500" /></div><span className="flex-1 text-sm text-slate-600">登録情報</span><ChevronRight size={18} className="text-gray-300" /></button><button onClick={handleLogout} className="w-full p-4 flex items-center gap-3 text-left hover:bg-gray-50"><div className="w-10 h-10 rounded-xl bg-red-50 flex items-center justify-center"><LogOut size={18} className="text-red-500" /></div><span className="flex-1 text-sm text-red-500">ログアウト</span></button></div></>)}
+            {settingsPage === 'notification' && (<div className="space-y-4"><div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden"><div className="p-4 flex items-center justify-between border-b border-gray-100"><div><p className="text-sm font-medium text-slate-700">メール通知</p><p className="text-xs text-gray-400 mt-0.5">期限が近づいたらメールでお知らせ</p></div><Toggle checked={data.settings?.emailNotification ?? true} onChange={(v) => updateSettings({ emailNotification: v })} /></div><div className="p-4 flex items-center justify-between border-b border-gray-100"><div><p className="text-sm font-medium text-slate-700">アプリ通知</p><p className="text-xs text-gray-400 mt-0.5">プッシュ通知でお知らせ</p></div><Toggle checked={data.settings?.appNotification ?? true} onChange={(v) => updateSettings({ appNotification: v })} /></div><div className="p-4"><p className="text-sm font-medium text-slate-700 mb-3">通知タイミング</p><div className="flex gap-2">{[1, 3, 5, 7].map(d => (<button key={d} onClick={() => updateSettings({ notifyDaysBefore: d })} className="flex-1 py-2.5 rounded-xl text-sm font-medium" style={(data.settings?.notifyDaysBefore || 3) === d ? { background: 'linear-gradient(135deg, #86A397, #6B8E7D)', color: 'white' } : { background: '#F1F5F9', color: '#64748B' }}>{d}日前</button>))}</div></div></div></div>)}
+          </div>
+        </div>
+      )}
+      <nav className="fixed bottom-0 left-0 right-0 max-w-md mx-auto z-30">
+        <div className="backdrop-blur-xl border-t border-slate-200 px-6 py-3" style={{ background: 'rgba(241,245,249,0.95)' }}>
+          <div className="flex justify-around items-center">
+          <NavButton icon={HomeIcon} label="ホーム" active={currentTab === 'home'} onClick={() => setCurrentTab('home')} />
+            <button onClick={() => setShowAddModal(true)} className="relative -mt-8 w-14 h-14 text-white rounded-2xl shadow-lg active:scale-95" style={{ background: 'linear-gradient(135deg, #64748B, #475569)', boxShadow: '0 8px 20px rgba(71,85,105,0.35)' }}><Plus size={28} strokeWidth={2.5} className="mx-auto" /></button>
+            <NavButton icon={Settings} label="設定" active={currentTab === 'settings'} onClick={() => { setCurrentTab('settings'); setSettingsPage('main'); }} />
+          </div>
+        </div>
+      </nav>
+      {showNotification && <NotificationPanel items={nearEndItems} onClose={() => setShowNotification(false)} calcRemainingDays={calcRemainingDays} />}
+      {showAddModal && <AddItemModal onClose={() => setShowAddModal(false)} onAdd={addItem} presets={PRESETS} />}
+      {detailItem && <DetailModal item={detailItem} onClose={() => setDetailItem(null)} onFinished={handleFinished} onStillRemaining={handleStillRemaining} onEdit={() => { setEditItem(detailItem); setDetailItem(null); }} onDelete={deleteItem} calcRemainingDays={calcRemainingDays} calcEndDate={calcEndDate} getRemainingPercent={getRemainingPercent} calcTotalDays={calcTotalDays} />}
+      {editItem && <EditItemModal item={editItem} onClose={() => setEditItem(null)} onSave={updateItem} />}
+      {reuseModal && <ReuseSettingsModal item={reuseModal} onClose={() => setReuseModal(null)} onSaveNew={handleReuseWithSettings} onKeep={handleReuseKeep} />}
+    </div>
+  );
+}
+
+function NavButton({ icon: Icon, label, active, onClick }) {
+  return <button onClick={onClick} className="flex flex-col items-center gap-0.5 py-2 px-5" style={{ color: active ? '#475569' : '#94A3B8' }}><Icon size={22} strokeWidth={active ? 2.5 : 2} /><span className="text-xs font-medium">{label}</span></button>;
+}
+
+function NotificationPanel({ items, onClose, calcRemainingDays }) {
+  return (
+    <BottomSheet onClose={onClose} title="通知">
+      <div className="p-5">
+        {items.length === 0 ? <p className="text-sm text-gray-400 text-center py-8">通知はありません</p> : (
+          <div className="space-y-3">{items.map(item => (<div key={item.id} className="p-3 bg-red-50 rounded-xl border border-red-100"><div className="flex items-center gap-3"><AlertTriangle size={20} className="text-red-500 flex-shrink-0" /><div className="flex-1"><p className="text-sm font-medium text-slate-700">{item.name}</p><p className="text-xs text-red-500">あと{calcRemainingDays(item)}日で切れそうです</p></div></div></div>))}</div>
+        )}
+      </div>
+    </BottomSheet>
+  );
+}
+
+function ItemCard({ item, calcRemainingDays, getRemainingPercent, calcEndDate, calcTotalDays, onClick }) {
+  const remaining = calcRemainingDays(item);
+  const remainingPercent = getRemainingPercent(item);
+  const totalDays = calcTotalDays(item);
+  const urgency = getUrgencyColor(remaining / totalDays);
+  const Icon = ICONS[item.icon] || Package;
+  return (
+    <button onClick={onClick} className="w-full bg-white rounded-2xl p-3.5 shadow-sm border border-gray-100 active:scale-[0.98] text-left">
+      <div className="flex items-center gap-3">
+        <div className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0" style={{ background: `${urgency.color}15` }}><Icon size={20} style={{ color: urgency.color }} /></div>
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center justify-between mb-1"><h3 className="font-medium text-slate-700 text-sm truncate">{item.name}</h3><span className="text-sm font-semibold" style={{ color: urgency.color }}>{remaining <= 0 ? '期限切れ' : `${remaining}日`}</span></div>
+          <div className="text-xs text-gray-400 mb-2">{item.mode === 'consumable' ? `${formatDate(item.openedDate)} → ${formatDate(calcEndDate(item).toISOString())}` : `期限: ${formatDateFull(item.expiryDate)}`}</div>
+          <div className="h-1.5 bg-gray-200 rounded-full overflow-hidden"><div className="h-full rounded-full transition-all duration-500" style={{ width: `${remainingPercent}%`, background: urgency.gradient }} /></div>
+        </div>
+        <ChevronRight size={18} className="text-gray-300 flex-shrink-0" />
+      </div>
+    </button>
+  );
+}
+
+function DetailModal({ item, onClose, onFinished, onStillRemaining, onEdit, onDelete, calcRemainingDays, calcEndDate, getRemainingPercent, calcTotalDays }) {
+  const remaining = calcRemainingDays(item);
+  const remainingPercent = getRemainingPercent(item);
+  const totalDays = calcTotalDays(item);
+  const urgency = getUrgencyColor(remaining / totalDays);
+  const Icon = ICONS[item.icon] || Package;
+  const isNearEnd = remaining <= 5 && remaining > 0;
+  return (
+    <BottomSheet onClose={onClose} title="詳細">
+      <div className="p-5">
+        <div className="flex items-center gap-4 mb-5">
+          <div className="w-14 h-14 rounded-2xl flex items-center justify-center" style={{ background: `${urgency.color}15` }}><Icon size={28} style={{ color: urgency.color }} /></div>
+          <div className="flex-1"><h2 className="text-lg font-semibold text-slate-700">{item.name}</h2><p className="text-sm text-gray-400">{item.mode === 'consumable' ? '消耗品' : '期限付き'}</p></div>
+          <div className="text-right"><p className="text-2xl font-bold" style={{ color: urgency.color }}>{remaining <= 0 ? '0' : remaining}日</p><p className="text-xs text-gray-400">残り</p></div>
+        </div>
+        <div className="bg-slate-50 rounded-2xl p-4 mb-5 space-y-3">
+          {item.mode === 'consumable' && (<><div className="flex justify-between text-sm"><span className="text-gray-500">開封日</span><span className="text-slate-700 font-medium">{formatDateFull(item.openedDate)}</span></div><div className="flex justify-between text-sm"><span className="text-gray-500">予想終了日</span><span className="text-slate-700 font-medium">{formatDateFull(calcEndDate(item).toISOString())}</span></div>{item.amount && <div className="flex justify-between text-sm"><span className="text-gray-500">内容量</span><span className="text-slate-700 font-medium">{formatAmount(item.amount, item.unit)}</span></div>}<div className="flex justify-between text-sm"><span className="text-gray-500">使用者</span><span className="text-slate-700 font-medium">{formatUsers(item.users)}</span></div></>)}
+          {item.mode === 'expiry' && <div className="flex justify-between text-sm"><span className="text-gray-500">期限日</span><span className="text-slate-700 font-medium">{formatDateFull(item.expiryDate)}</span></div>}
+        </div>
+        <div className="mb-5"><p className="text-xs text-gray-400 mb-2">残り期間</p><div className="h-3 bg-gray-200 rounded-full overflow-hidden"><div className="h-full rounded-full" style={{ width: `${remainingPercent}%`, background: urgency.gradient }} /></div><div className="flex justify-between text-xs text-gray-400 mt-1.5"><span>0%</span><span className="font-medium">残り {Math.round(remainingPercent)}%</span><span>100%</span></div></div>
+        {item.mode === 'consumable' && (<div className="space-y-2 mb-4"><button onClick={() => onFinished(item.id)} className="w-full py-3.5 text-white rounded-xl font-medium active:scale-[0.98] flex items-center justify-center gap-2" style={{ background: 'linear-gradient(135deg, #86A397, #6B8E7D)' }}><Check size={18} /> 使い終わった</button>{isNearEnd && <button onClick={() => onStillRemaining(item.id)} className="w-full py-3.5 rounded-xl font-medium active:scale-[0.98] flex items-center justify-center gap-2" style={{ background: 'rgba(245,158,11,0.1)', color: '#D97706', border: '1px solid rgba(245,158,11,0.3)' }}><RotateCcw size={18} /> まだ残ってる（予測を延長）</button>}</div>)}
+        <div className="flex gap-2"><button onClick={onEdit} className="flex-1 py-3 bg-slate-100 text-slate-600 rounded-xl font-medium active:scale-[0.98] flex items-center justify-center gap-2"><Edit3 size={16} /> 編集</button><button onClick={() => onDelete(item.id)} className="py-3 px-5 bg-red-50 text-red-500 rounded-xl font-medium active:scale-[0.98]"><Trash2 size={16} /></button></div>
+      </div>
+    </BottomSheet>
+  );
+}
+
+function ReuseSettingsModal({ item, onClose, onSaveNew, onKeep }) {
+  const [users, setUsers] = useState(item.users || { adultMale: 1, adultFemale: 0, childMale: 0, childFemale: 0 });
+  const [estimatedDays, setEstimatedDays] = useState(item.estimatedDays);
+  return (
+    <BottomSheet onClose={onClose} title={`次の「${item.name}」を開封`}>
+      <div className="p-5 space-y-5">
+        <div><label className="text-xs text-gray-500 mb-2 block">使用者</label><div className="bg-white rounded-xl p-3 space-y-2 border border-gray-200">{[['adultMale', '男性'], ['adultFemale', '女性'], ['childMale', '男の子'], ['childFemale', '女の子']].map(([key, label]) => (<div key={key} className="flex items-center justify-between"><span className="text-sm text-slate-600">{label}</span><div className="flex items-center gap-2"><button onClick={() => setUsers(p => ({ ...p, [key]: Math.max(0, p[key] - 1) }))} className="w-7 h-7 rounded-full bg-slate-100 text-slate-500 text-sm font-medium">−</button><span className="w-5 text-center text-sm font-medium text-slate-700">{users[key]}</span><button onClick={() => setUsers(p => ({ ...p, [key]: p[key] + 1 }))} className="w-7 h-7 rounded-full text-white flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #86A397, #6B8E7D)' }}><Plus size={14} /></button></div></div>))}</div></div>
+        <div><label className="text-xs text-gray-500 mb-1.5 block">予想消費日数: {estimatedDays}日</label><input type="range" min="7" max="180" value={estimatedDays} onChange={e => setEstimatedDays(Number(e.target.value))} className="w-full" style={{ accentColor: '#86A397' }} /></div>
+        <div className="flex gap-3"><button onClick={() => onKeep(item)} className="flex-1 py-3.5 bg-slate-200 text-slate-600 rounded-xl font-medium active:scale-[0.98]">設定しない</button><button onClick={() => onSaveNew(item, { users, estimatedDays })} className="flex-1 py-3.5 text-white rounded-xl font-medium active:scale-[0.98]" style={{ background: 'linear-gradient(135deg, #86A397, #6B8E7D)' }}>この設定で開封</button></div>
+      </div>
+    </BottomSheet>
+  );
+}
+
+function EditItemModal({ item, onClose, onSave }) {
+  const [form, setForm] = useState({ ...item });
+  const dateRef = useRef(null);
+  const d = form.expiryDate ? new Date(form.expiryDate) : new Date();
+  const [year, setYear] = useState(d.getFullYear());
+  const [month, setMonth] = useState(d.getMonth() + 1);
+  const [day, setDay] = useState(d.getDate());
+  const years = Array.from({ length: 10 }, (_, i) => new Date().getFullYear() + i);
+  const daysInMonth = new Date(year, month, 0).getDate();
+  useEffect(() => { if(form.mode === 'expiry') setForm(p => ({ ...p, expiryDate: `${year}-${String(month).padStart(2,'0')}-${String(day).padStart(2,'0')}` })); }, [year, month, day]);
+  return (
+    <BottomSheet onClose={onClose} title="編集">
+      <div className="p-5 space-y-4">
+        <div><label className="text-xs text-gray-500 mb-1.5 block">アイテム名</label><input type="text" value={form.name} onChange={e => setForm(p => ({ ...p, name: e.target.value }))} className="w-full px-4 py-3 bg-white rounded-xl text-slate-700 text-sm border border-gray-200" /></div>
+        <div><label className="text-xs text-gray-500 mb-1.5 block">アイコン</label><div className="flex flex-wrap gap-2">{ICON_LIST.map(ic => { const I = ICONS[ic]; return <button key={ic} onClick={() => setForm(p => ({ ...p, icon: ic }))} className="w-9 h-9 rounded-lg flex items-center justify-center" style={form.icon === ic ? { background: 'linear-gradient(135deg, #86A397, #6B8E7D)', color: 'white' } : { background: 'white', color: '#64748B', border: '1px solid #E2E8F0' }}><I size={16} /></button>; })}</div></div>
+        {form.mode === 'consumable' && (<><div><label className="text-xs text-gray-500 mb-1.5 block">予想消費日数: {form.estimatedDays}日</label><input type="range" min="7" max="180" value={form.estimatedDays} onChange={e => setForm(p => ({ ...p, estimatedDays: Number(e.target.value) }))} className="w-full" style={{ accentColor: '#86A397' }} /></div><div className="flex gap-2"><div className="flex-1"><label className="text-xs text-gray-500 mb-1.5 block">内容量</label><input type="number" value={form.amount || ''} onChange={e => setForm(p => ({ ...p, amount: Number(e.target.value) }))} className="w-full px-4 py-3 bg-white rounded-xl text-slate-700 text-sm border border-gray-200" placeholder="500" /></div><div className="w-24"><label className="text-xs text-gray-500 mb-1.5 block">単位</label><select value={form.unit || 'ml'} onChange={e => setForm(p => ({ ...p, unit: e.target.value }))} className="w-full px-3 py-3 bg-white rounded-xl text-slate-700 text-sm border border-gray-200">{Object.entries(UNITS).map(([k, v]) => <option key={k} value={k}>{v}</option>)}</select></div></div></>)}
+        {form.mode === 'expiry' && (<div><label className="text-xs text-gray-500 mb-1.5 block">期限日</label><div className="flex gap-2"><select value={year} onChange={e => setYear(Number(e.target.value))} className="flex-1 px-3 py-2.5 bg-white rounded-xl text-slate-700 text-sm border border-gray-200">{years.map(y => <option key={y} value={y}>{y}年</option>)}</select><select value={month} onChange={e => setMonth(Number(e.target.value))} className="w-20 px-3 py-2.5 bg-white rounded-xl text-slate-700 text-sm border border-gray-200">{Array.from({ length: 12 }, (_, i) => i + 1).map(m => <option key={m} value={m}>{m}月</option>)}</select><select value={day} onChange={e => setDay(Number(e.target.value))} className="w-20 px-3 py-2.5 bg-white rounded-xl text-slate-700 text-sm border border-gray-200">{Array.from({ length: daysInMonth }, (_, i) => i + 1).map(dd => <option key={dd} value={dd}>{dd}日</option>)}</select></div></div>)}
+        <button onClick={() => onSave(form)} className="w-full py-3.5 text-white rounded-xl font-medium active:scale-[0.98]" style={{ background: 'linear-gradient(135deg, #86A397, #6B8E7D)' }}>保存する</button>
+      </div>
+    </BottomSheet>
+  );
+}
+
+function AddItemModal({ onClose, onAdd, presets }) {
+  const [step, setStep] = useState(1);
+  const [mode, setMode] = useState('consumable');
+  const [name, setName] = useState('');
+  const [icon, setIcon] = useState('package');
+  const [expiryYear, setExpiryYear] = useState(new Date().getFullYear());
+  const [expiryMonth, setExpiryMonth] = useState(new Date().getMonth() + 1);
+  const [expiryDay, setExpiryDay] = useState(new Date().getDate());
+  const [estimatedDays, setEstimatedDays] = useState(30);
+  const [amount, setAmount] = useState('');
+  const [unit, setUnit] = useState('ml');
+  const [users, setUsers] = useState({ adultMale: 1, adultFemale: 0, childMale: 0, childFemale: 0 });
+  const [showCamera, setShowCamera] = useState(false);
+  const dateRef = useRef(null);
+
+  const totalUsers = users.adultMale + users.adultFemale + (users.childMale + users.childFemale) * 0.5;
+  const calcSuggested = (baseDays = 30) => Math.round(baseDays / Math.max(0.5, totalUsers));
+  const years = Array.from({ length: 10 }, (_, i) => new Date().getFullYear() + i);
+  const daysInMonth = new Date(expiryYear, expiryMonth, 0).getDate();
+  const expiryDate = `${expiryYear}-${String(expiryMonth).padStart(2,'0')}-${String(expiryDay).padStart(2,'0')}`;
+
+  const handlePreset = (preset) => { setName(preset.name); setIcon(preset.icon); setAmount(preset.baseAmount); setUnit(preset.unit || 'ml'); };
+  const handleSubmit = () => { if (!name || (mode === 'expiry' && !expiryDate)) return; onAdd({ name, mode, icon, expiryDate: mode === 'expiry' ? expiryDate : undefined, estimatedDays, users, amount: Number(amount) || undefined, unit }); };
+  const handleScanResult = () => { setShowCamera(false); setName('ダヴ ボディウォッシュ'); setIcon('bath'); setAmount(500); setUnit('ml'); };
+  const handleBack = () => { if (step === 1) onClose(); else setStep(step - 1); };
+
+  useEffect(() => { setEstimatedDays(calcSuggested(30)); }, [totalUsers]);
+
+  return (
+    <BottomSheet onClose={onClose} title={step === 1 ? 'タイプ選択' : step === 2 ? '基本情報' : '詳細設定'} showBack={step > 1} onBack={handleBack}>
+      <div className="p-5">
+        {step === 1 && (
+          <div className="space-y-3">
+            <button onClick={() => { setMode('consumable'); setStep(2); }} className="w-full p-4 bg-white rounded-2xl border border-gray-200 text-left active:scale-[0.98] shadow-sm"><div className="flex items-center gap-3"><div className="w-12 h-12 rounded-xl flex items-center justify-center" style={{ background: 'rgba(134,163,151,0.15)' }}><Package size={24} style={{ color: '#86A397' }} /></div><div><h3 className="font-medium text-slate-700">消耗品</h3><p className="text-xs text-gray-400 mt-0.5">シャンプー、洗剤など</p></div></div></button>
+            <button onClick={() => { setMode('expiry'); setStep(2); }} className="w-full p-4 bg-white rounded-2xl border border-gray-200 text-left active:scale-[0.98] shadow-sm"><div className="flex items-center gap-3"><div className="w-12 h-12 rounded-xl flex items-center justify-center" style={{ background: 'rgba(71,85,105,0.1)' }}><Calendar size={24} style={{ color: '#475569' }} /></div><div><h3 className="font-medium text-slate-700">期限付き</h3><p className="text-xs text-gray-400 mt-0.5">定期券、年パスなど</p></div></div></button>
+          </div>
+        )}
+        {step === 2 && mode === 'consumable' && !showCamera && (
+          <div className="space-y-5">
+            <button onClick={() => setShowCamera(true)} className="w-full p-4 bg-white rounded-2xl border border-dashed border-slate-300 text-center active:scale-[0.98]"><div className="flex items-center justify-center gap-2 text-slate-500"><Camera size={20} /><span>バーコードをスキャン</span></div></button>
+            <div><label className="text-xs text-gray-500 mb-2 block">プリセット</label><div className="flex flex-wrap gap-2">{presets.map(p => { const I = ICONS[p.icon]; return <button key={p.name} onClick={() => handlePreset(p)} className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs" style={name === p.name ? { background: 'linear-gradient(135deg, #86A397, #6B8E7D)', color: 'white' } : { background: 'white', color: '#475569', border: '1px solid #E2E8F0' }}><I size={14} />{p.name}</button>; })}</div></div>
+            <div><label className="text-xs text-gray-500 mb-1.5 block">アイテム名</label><input type="text" value={name} onChange={e => setName(e.target.value)} placeholder="例：シャンプー" className="w-full px-4 py-3 bg-white rounded-xl text-slate-700 text-sm border border-gray-200" /></div>
+            <div><label className="text-xs text-gray-500 mb-1.5 block">アイコン</label><div className="flex flex-wrap gap-2">{ICON_LIST.map(ic => { const I = ICONS[ic]; return <button key={ic} onClick={() => setIcon(ic)} className="w-9 h-9 rounded-lg flex items-center justify-center" style={icon === ic ? { background: 'linear-gradient(135deg, #86A397, #6B8E7D)', color: 'white' } : { background: 'white', color: '#64748B', border: '1px solid #E2E8F0' }}><I size={16} /></button>; })}</div></div>
+            <button onClick={() => setStep(3)} disabled={!name} className="w-full py-3.5 text-white rounded-xl font-medium" style={{ background: 'linear-gradient(135deg, #64748B, #475569)' }}>次へ</button>
+          </div>
+        )}
+        {step === 2 && mode === 'consumable' && showCamera && (
+          <div className="space-y-4">
+            <div className="aspect-[4/3] bg-black rounded-2xl overflow-hidden relative flex items-center justify-center"><div className="absolute w-48 h-0.5 bg-red-500 animate-pulse" /><p className="text-white/60 text-sm">カメラ起動中...</p></div>
+            <div className="flex gap-3"><button onClick={() => setShowCamera(false)} className="flex-1 py-3 bg-slate-200 text-slate-600 rounded-xl font-medium">キャンセル</button><button onClick={handleScanResult} className="flex-1 py-3 text-white rounded-xl font-medium" style={{ background: 'linear-gradient(135deg, #86A397, #6B8E7D)' }}>デモ: 検出</button></div>
+          </div>
+        )}
+        {step === 3 && mode === 'consumable' && (
+          <div className="space-y-5">
+            <div><label className="text-xs text-gray-500 mb-2 block">使用者</label><div className="bg-white rounded-xl p-3 space-y-2 border border-gray-200">{[['adultMale', '男性'], ['adultFemale', '女性'], ['childMale', '男の子'], ['childFemale', '女の子']].map(([key, label]) => (<div key={key} className="flex items-center justify-between"><span className="text-sm text-slate-600">{label}</span><div className="flex items-center gap-2"><button onClick={() => setUsers(p => ({ ...p, [key]: Math.max(0, p[key] - 1) }))} className="w-7 h-7 rounded-full bg-slate-100">−</button><span className="text-sm font-medium">{users[key]}</span><button onClick={() => setUsers(p => ({ ...p, [key]: p[key] + 1 }))} className="w-7 h-7 rounded-full text-white" style={{ background: '#86A397' }}>+</button></div></div>))}</div></div>
+            <div><label className="text-xs text-gray-500 mb-1.5 block">予想消費日数: {estimatedDays}日</label><input type="range" min="7" max="180" value={estimatedDays} onChange={e => setEstimatedDays(Number(e.target.value))} className="w-full" style={{ accentColor: '#86A397' }} /></div>
+            <button onClick={handleSubmit} className="w-full py-3.5 text-white rounded-xl font-medium" style={{ background: 'linear-gradient(135deg, #86A397, #6B8E7D)' }}>追加する</button>
+          </div>
+        )}
+        {step === 2 && mode === 'expiry' && (
+          <div className="space-y-5">
+            <div><label className="text-xs text-gray-500 mb-1.5 block">アイテム名</label><input type="text" value={name} onChange={e => setName(e.target.value)} placeholder="例：定期券" className="w-full px-4 py-3 bg-white rounded-xl text-slate-700 text-sm border border-gray-200" /></div>
+            <div><label className="text-xs text-gray-500 mb-1.5 block">期限日</label><div className="flex gap-2"><select value={expiryYear} onChange={e => setExpiryYear(Number(e.target.value))} className="flex-1 px-3 py-2.5 bg-white rounded-xl border border-gray-200">{years.map(y => <option key={y} value={y}>{y}年</option>)}</select><select value={expiryMonth} onChange={e => setExpiryMonth(Number(e.target.value))} className="w-20 px-3 py-2.5 bg-white rounded-xl border border-gray-200">{Array.from({ length: 12 }, (_, i) => i + 1).map(m => <option key={m} value={m}>{m}月</option>)}</select><select value={expiryDay} onChange={e => setExpiryDay(Number(e.target.value))} className="w-20 px-3 py-2.5 bg-white rounded-xl border border-gray-200">{Array.from({ length: daysInMonth }, (_, i) => i + 1).map(dd => <option key={dd} value={dd}>{dd}日</option>)}</select></div></div>
+            <button onClick={handleSubmit} className="w-full py-3.5 text-white rounded-xl font-medium" style={{ background: 'linear-gradient(135deg, #86A397, #6B8E7D)' }}>追加する</button>
+          </div>
+        )}
+      </div>
+    </BottomSheet>
+  );
+}
+</file>
+
+<file path="src/pages/Login.jsx">
+import { supabase } from '../lib/supabase'
+
+const Login = () => {
+  const handleGoogleLogin = async () => {
+    // Supabaseを使ってGoogleログインを呼び出す魔法の言葉
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+    })
+    if (error) console.error('Login error:', error.message)
+  }
+
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="max-w-md w-full p-8 bg-white rounded-xl shadow-lg text-center">
+        <h1 className="text-2xl font-bold mb-6 text-gray-800">在庫予測アプリ</h1>
+        <p className="text-gray-600 mb-8">Googleアカウントでログインして始めましょう</p>
+        
+        <button
+          onClick={handleGoogleLogin}
+          className="flex items-center justify-center w-full py-3 px-4 border border-gray-300 rounded-lg shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+        >
+          <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" className="w-5 h-5 mr-2" alt="Google" />
+          Googleでログイン
+        </button>
+      </div>
+    </div>
+  )
+}
+
+export default Login
+</file>
+
+<file path="tailwind.config.js">
+/** @type {import('tailwindcss').Config} */
+export default {
+    content: [
+      "./index.html",
+      "./src/**/*.{js,ts,jsx,tsx}",
+    ],
+    theme: {
+      extend: {},
+    },
+    plugins: [],
+  }
+</file>
+
+<file path="vite.config.js">
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
+
+// https://vite.dev/config/
+export default defineConfig({
+  plugins: [react()],
+})
+</file>
+
+<file path="src/index.css">
+@import "tailwindcss";
+</file>
+
+<file path="package.json">
+{
+  "name": "stock-predict",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "lint": "eslint .",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.88.0",
+    "@tailwindcss/postcss": "^4.1.18",
+    "lucide-react": "^0.561.0",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.1",
+    "@types/react": "^19.2.5",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^5.1.1",
+    "autoprefixer": "^10.4.23",
+    "eslint": "^9.39.1",
+    "eslint-plugin-react-hooks": "^7.0.1",
+    "eslint-plugin-react-refresh": "^0.4.24",
+    "globals": "^16.5.0",
+    "postcss": "^8.5.6",
+    "tailwindcss": "^4.1.18",
+    "vite": "^7.2.4"
+  }
+}
+</file>
+
+<file path="src/App.jsx">
+import { useState, useEffect } from 'react'
+import { supabase } from './lib/supabase'
+import Login from './pages/Login'
+import Home from './pages/Home'
+
+function App() {
+  const [session, setSession] = useState(null)
+
+  useEffect(() => {
+    // 1. 現在のログイン状態（セッション）を取得
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session)
+    })
+
+    // 2. ログイン・ログアウトの状態変化をリアルタイムで監視
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session)
+    })
+
+    return () => subscription.unsubscribe()
+  }, [])
+
+  // ログインしてれば Home 画面、してなければ Login 画面を表示
+  return (
+    <>
+      {session ? <Home /> : <Login />}
+    </>
+  )
+}
+
+export default App
+</file>
+
+</files>

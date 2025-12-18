@@ -29,4 +29,3 @@ function App() {
 }
 
 export default App
-// redeploy for env vars
