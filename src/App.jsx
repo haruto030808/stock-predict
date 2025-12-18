@@ -104,8 +104,21 @@ export default function StockPredict() {
   const [reuseModal, setReuseModal] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => { (async () => { try { const r = await window.storage.get('stockpredict-v11'); if(r?.value) setData(JSON.parse(r.value)); } catch(e){} setLoading(false); })(); }, []);
-  useEffect(() => { if(!loading) window.storage.set('stockpredict-v11', JSON.stringify(data)).catch(()=>{}); }, [data, loading]);
+  useEffect(() => {
+    try {
+      const savedData = localStorage.getItem('stockpredict-v11');
+      if (savedData) setData(JSON.parse(savedData));
+    } catch (e) {
+      console.error("Failed to load data:", e);
+    }
+    setLoading(false);
+  }, []);
+
+  useEffect(() => {
+    if (!loading) {
+      localStorage.setItem('stockpredict-v11', JSON.stringify(data));
+    }
+  }, [data, loading]);
 
   const calcTotalDays = (item) => {
     if (item.mode === 'expiry') { const created = new Date(item.createdDate || getTodayStr()); const expiry = new Date(item.expiryDate); return Math.max(Math.ceil((expiry - created) / 86400000), 1); }
