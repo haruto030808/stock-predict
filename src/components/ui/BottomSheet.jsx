@@ -1,4 +1,4 @@
-import { X, ChevronLeft } from 'lucide-react';
+import { ChevronLeft, X } from 'lucide-react';
 
 export default function BottomSheet({ children, onClose, title, showBack, onBack }) {
   return (
@@ -9,7 +9,7 @@ export default function BottomSheet({ children, onClose, title, showBack, onBack
         onClick={onClose} 
       />
       
-      {/* モーダル本体：sm: (PC/タブレット) では中央に浮き、通常 (スマホ) では下から出る */}
+      {/* モーダル本体 */}
       <div className="relative bg-white w-full max-w-lg sm:max-w-4xl h-[90vh] sm:h-auto sm:max-h-[85vh] rounded-t-[32px] sm:rounded-[32px] shadow-2xl overflow-hidden flex flex-col transform transition-all animate-in slide-in-from-bottom sm:zoom-in-95 duration-300">
         
         {/* ヘッダー */}
@@ -27,7 +27,7 @@ export default function BottomSheet({ children, onClose, title, showBack, onBack
           </button>
         </div>
 
-        {/* コンテンツ：スクロール可能 */}
+        {/* コンテンツ */}
         <div className="flex-1 overflow-y-auto bg-white custom-scrollbar">
           {children}
         </div>

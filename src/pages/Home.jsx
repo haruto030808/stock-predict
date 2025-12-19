@@ -1,22 +1,25 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
-import { 
-  Plus, Settings, Bell, Package, Calendar, Check, 
-  Trash2, RotateCcw, AlertTriangle 
-} from 'lucide-react';
+import { Plus, Settings, Package, Trash2, Edit3, Check } from 'lucide-react';
 
-// コンポーネントとデータのインポート
-import { ICONS, UNITS, PRESETS } from '../constants/itemData';
+import { ICONS } from '../constants/itemData';
 import BottomSheet from '../components/ui/BottomSheet';
 import ItemCard from '../components/ItemCard';
 import AddItemModal from '../components/modals/AddItemModal';
+import EditItemModal from '../components/modals/EditItemModal';
 import SettingsTab from '../components/SettingsTab';
 
-// --- ヘルパー関数 ---
-const getToday = () => { const d = new Date(); d.setHours(0,0,0,0); return d; };
-const getTodayStr = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; };
-const formatDate = (dateStr) => { const d = new Date(dateStr); return `${d.getMonth()+1}/${d.getDate()}`; };
-const formatDateFull = (dateStr) => { const d = new Date(dateStr); return `${d.getFullYear()}/${d.getMonth()+1}/${d.getDate()}`; };
+const getTodayStr = () => new Date().toISOString().split('T')[0];
+
+const formatDate = (dateStr) => { 
+  const d = new Date(dateStr); 
+  return (d.getMonth() + 1) + '/' + d.getDate(); 
+};
+
+const formatDateFull = (dateStr) => { 
+  const d = new Date(dateStr); 
+  return d.getFullYear() + '/' + (d.getMonth() + 1) + '/' + d.getDate(); 
+};
 
 const getUrgencyColor = (ratio) => {
   if (ratio <= 0.1) return { color: '#DC2626', gradient: 'linear-gradient(to right, #FCA5A5, #DC2626)' };
@@ -26,109 +29,135 @@ const getUrgencyColor = (ratio) => {
   return { color: '#86A397', gradient: 'linear-gradient(to right, #A7C4BC, #86A397)' };
 };
 
-const formatUsers = (users) => {
-  if (!users) return '未設定';
+const formatUsers = (adultCount, childCount) => {
   const parts = [];
-  if (users.adultMale > 0) parts.push(`男性${users.adultMale}人`);
-  if (users.adultFemale > 0) parts.push(`女性${users.adultFemale}人`);
-  if (users.childMale > 0) parts.push(`男の子${users.childMale}人`);
-  if (users.childFemale > 0) parts.push(`女の子${users.childFemale}人`);
+  if (adultCount > 0) parts.push('大人' + adultCount + '人');
+  if (childCount > 0) parts.push('子ども' + childCount + '人');
   return parts.length > 0 ? parts.join('、') : '未設定';
 };
 
-// 初期データ
-const initialData = {
-  items: [],
-  user: { name: 'ユーザー', email: '' },
-  settings: { emailNotification: true, appNotification: true, notifyDaysBefore: 3 }
-};
-
 export default function Home() {
-  const [data, setData] = useState(initialData);
+  const [data, setData] = useState({ items: [], user: null });
   const [currentTab, setCurrentTab] = useState('home');
   const [showAddModal, setShowAddModal] = useState(false);
   const [initialMode, setInitialMode] = useState('consumable'); 
   const [detailItem, setDetailItem] = useState(null);
   const [editItem, setEditItem] = useState(null);
-  const [showNotification, setShowNotification] = useState(false);
-  const [reuseModal, setReuseModal] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [historyData, setHistoryData] = useState({});
 
-// 1. データ読み込み（Supabaseから直接取得し、UI用の形式に変換）
-useEffect(() => {
-  async function loadData() {
-    // ログイン中のユーザー情報を取得
-    const { data: { user } } = await supabase.auth.getUser();
-    
-    if (user) {
-      setUser(user);
-      
-      // Supabaseの 'items' テーブルから自分のデータだけを取得
-      const { data: dbItems, error } = await supabase
-        .from('items')
-        .select('*')
-        .eq('user_id', user.id)
-        .eq('is_archived', false); // アーカイブされていないものだけ
-      
-      if (!error && dbItems) {
-        // 【ここが重要！】DBの命名（snake_case）をUI用の命名（camelCase）に変換します
-        setItems(dbItems.map(i => ({
-          ...i,
-          // 日付の変換
-          openedDate: i.opened_at,
-          expiryDate: i.expiry_date,
-          // 予測ロジック用の変換
-          estimatedDays: i.base_days,
-          correctionFactor: i.current_factor,
-          // 最新の「独立した人数カラム」を、UIが理解できる一つのオブジェクトにまとめます
-          users: {
-            adultMale: i.adult_male,
-            adultFemale: i.adult_female,
-            childMale: i.child_male,
-            childFemale: i.child_female
+  useEffect(() => {
+    let isMounted = true;
+    async function loadData() {
+      try {
+        setLoading(true);
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user && isMounted) {
+          const { data: dbItems, error } = await supabase
+            .from('items')
+            .select('*')
+            .eq('user_id', user.id)
+            .eq('is_archived', false);
+
+          if (!error && dbItems) {
+            const formatted = dbItems.map(i => ({
+              id: i.id,
+              name: i.name,
+              brandName: i.brand_name,
+              janCode: i.jan_code,
+              icon: i.icon,
+              mode: i.mode,
+              estimatedDays: i.base_days,
+              correctionFactor: i.current_factor,
+              openedDate: i.opened_at,
+              expiryDate: i.expiry_date,
+              capacity: i.capacity,
+              unit: i.unit,
+              createdAt: i.created_at,
+              initialPercent: i.initial_percent || 100,
+              adultCount: i.adult_count || 1,
+              childCount: i.child_count || 0
+            }));
+            setData({ 
+              items: formatted, 
+              user: { 
+                name: user.user_metadata?.full_name || 'ユーザー', 
+                email: user.email 
+              } 
+            });
+
+            const { data: historyRows } = await supabase
+              .from('usage_history')
+              .select('item_id, actual_days')
+              .eq('user_id', user.id);
+
+            if (historyRows) {
+              const grouped = {};
+              historyRows.forEach(h => {
+                if (!grouped[h.item_id]) {
+                  grouped[h.item_id] = { count: 0, totalDays: 0 };
+                }
+                grouped[h.item_id].count++;
+                grouped[h.item_id].totalDays += h.actual_days;
+              });
+              
+              const processed = {};
+              Object.keys(grouped).forEach(id => {
+                processed[id] = {
+                  count: grouped[id].count,
+                  avgDays: Math.round(grouped[id].totalDays / grouped[id].count)
+                };
+              });
+              setHistoryData(processed);
+            }
           }
-        })));
+        }
+      } catch (err) {
+        console.error('Data load error:', err);
+      } finally { 
+        if (isMounted) setLoading(false); 
       }
     }
-    setLoading(false);
-  }
-  loadData();
-}, []);
+    loadData();
+    return () => { isMounted = false; };
+  }, []);
 
-  // 計算ロジック
   const calcTotalDays = (item) => {
     if (item.mode === 'expiry') {
-      const created = new Date(item.createdDate || getTodayStr());
-      const expiry = new Date(item.expiryDate);
-      return Math.max(Math.ceil((expiry - created) / 86400000), 1);
+      const start = new Date(item.openedDate || item.createdAt || getTodayStr());
+      const end = new Date(item.expiryDate);
+      return Math.max(Math.ceil((end - start) / 86400000), 1);
     }
+    
+    const history = historyData[item.id];
+    if (history && history.avgDays) {
+      return history.avgDays;
+    }
+    
     return Math.round(item.estimatedDays * (item.correctionFactor || 1.0));
   };
 
   const calcEndDate = (item) => {
-    if (item.mode === 'expiry') return new Date(item.expiryDate);
-    const opened = new Date(item.openedDate);
-    opened.setHours(0,0,0,0);
-    return new Date(opened.getTime() + calcTotalDays(item) * 86400000);
+    if (item.mode === 'expiry') {
+      return new Date(item.expiryDate);
+    }
+    const startDate = new Date(item.openedDate || item.createdAt || getTodayStr());
+    return new Date(startDate.getTime() + calcTotalDays(item) * 86400000);
   };
-
+  
   const calcRemainingDays = (item) => {
     const end = calcEndDate(item);
-    end.setHours(0,0,0,0);
-    return Math.ceil((end - getToday()) / 86400000);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    return Math.ceil((end - today) / 86400000);
   };
 
-  const getRemainingPercent = (item) => Math.max(0, Math.min(100, (calcRemainingDays(item) / calcTotalDays(item)) * 100));
-
-  // ハンドラー
-  const openAddModal = (mode) => {
-    setInitialMode(mode);
-    setShowAddModal(true);
+  const getRemainingPercent = (item) => {
+    const total = calcTotalDays(item);
+    if (total === 0) return 0;
+    return Math.max(0, Math.min(100, (calcRemainingDays(item) / total) * 100));
   };
 
-  const handleFinished = (itemId) => { setReuseModal(data.items.find(i => i.id === itemId)); setDetailItem(null); };
-  
-  // ✅ ここから貼り付け
   const addItem = async (newItem) => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
@@ -139,113 +168,208 @@ useEffect(() => {
         name: newItem.name,
         brand_name: newItem.brandName || '',
         jan_code: newItem.janCode || '',
-        icon: newItem.icon || 'package',
+        icon: newItem.icon,
         mode: newItem.mode,
-        base_days: newItem.estimatedDays || 30,
-        current_factor: 1.0,
-        adult_male: newItem.users?.adultMale || 0,
-        adult_female: newItem.users?.adultFemale || 0,
-        child_male: newItem.users?.childMale || 0,
-        child_female: newItem.users?.childFemale || 0,
+        base_days: newItem.estimatedDays,
+        adult_count: newItem.adultCount || 1,
+        child_count: newItem.childCount || 0,
+        initial_percent: newItem.initialPercent || 100,
         opened_at: newItem.mode === 'consumable' ? new Date().toISOString() : null,
         expiry_date: newItem.expiryDate || null,
-        stock_count: 1,
+        capacity: newItem.capacity || null,
+        unit: newItem.unit || null,
         is_archived: false
       };
 
       const { data: inserted, error } = await supabase
         .from('items')
         .insert([itemData])
-        .select();
+        .select()
+        .single();
 
-      if (error) throw error;
-
-      if (inserted && inserted[0]) {
-        const i = inserted[0];
-        const formattedNewItem = {
-          id: i.id,
-          name: i.name,
-          brandName: i.brand_name,
-          janCode: i.jan_code,
-          icon: i.icon,
-          mode: i.mode,
-          estimatedDays: i.base_days,
-          correctionFactor: i.current_factor,
-          openedDate: i.opened_at,
-          expiry_date: i.expiry_date,
-          users: {
-            adultMale: i.adult_male,
-            adultFemale: i.adult_female,
-            childMale: i.child_male,
-            childFemale: i.child_female
-          }
+      if (!error && inserted) {
+        const formatted = {
+          id: inserted.id,
+          name: inserted.name,
+          brandName: inserted.brand_name,
+          janCode: inserted.jan_code,
+          icon: inserted.icon,
+          mode: inserted.mode,
+          estimatedDays: inserted.base_days,
+          correctionFactor: inserted.current_factor,
+          openedDate: inserted.opened_at,
+          expiryDate: inserted.expiry_date,
+          capacity: inserted.capacity,
+          unit: inserted.unit,
+          createdAt: inserted.created_at,
+          initialPercent: inserted.initial_percent || 100,
+          adultCount: inserted.adult_count || 1,
+          childCount: inserted.child_count || 0
         };
+        setData(prev => ({ ...prev, items: [...prev.items, formatted] }));
+      }
+    } catch (err) {
+      console.error('Add item error:', err);
+    }
+    setShowAddModal(false);
+  };
 
+  const updateItem = async (updatedItem) => {
+    try {
+      const { error } = await supabase.from('items').update({
+        name: updatedItem.name,
+        brand_name: updatedItem.brandName,
+        icon: updatedItem.icon,
+        adult_count: updatedItem.adultCount || 1,
+        child_count: updatedItem.childCount || 0,
+        capacity: updatedItem.capacity,
+        unit: updatedItem.unit
+      }).eq('id', updatedItem.id);
+
+      if (!error) {
         setData(prev => ({
           ...prev,
-          items: [formattedNewItem, ...prev.items]
+          items: prev.items.map(item => 
+            item.id === updatedItem.id ? { ...item, ...updatedItem } : item
+          )
         }));
       }
-      setShowAddModal(false);
-    } catch (e) {
-      console.error("アイテム追加エラー:", e.message);
-      alert("保存に失敗しました。SQLが正しく実行されているか確認してください。");
+    } catch (err) {
+      console.error('Update item error:', err);
+    }
+    setEditItem(null);
+  };
+
+  const deleteItem = async (itemId) => {
+    try {
+      const { error } = await supabase.from('items').delete().eq('id', itemId);
+      if (!error) {
+        setData(prev => ({
+          ...prev,
+          items: prev.items.filter(item => item.id !== itemId)
+        }));
+      }
+    } catch (err) {
+      console.error('Delete item error:', err);
+    }
+    setDetailItem(null);
+  };
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    window.location.reload();
+  };
+
+  const finishItem = async (item) => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const openedAt = new Date(item.openedDate || item.createdAt);
+      const now = new Date();
+      const actualDays = Math.max(1, Math.ceil((now - openedAt) / 86400000));
+
+      const initialPercent = item.initialPercent || 100;
+      const fullCycleDays = Math.round(actualDays / (initialPercent / 100));
+
+      await supabase.from('usage_history').insert({
+        item_id: item.id,
+        user_id: user.id,
+        opened_at: item.openedDate || item.createdAt,
+        closed_at: now.toISOString(),
+        actual_days: fullCycleDays,
+        factor_at_time: item.correctionFactor || 1.0
+      });
+
+      await supabase.from('items').update({
+        opened_at: now.toISOString(),
+        initial_percent: 100
+      }).eq('id', item.id);
+
+      const newHistoryData = { ...historyData };
+      if (!newHistoryData[item.id]) {
+        newHistoryData[item.id] = { count: 0, totalDays: 0 };
+      }
+      const prevCount = newHistoryData[item.id].count;
+      const prevAvg = newHistoryData[item.id].avgDays || item.estimatedDays;
+      newHistoryData[item.id] = {
+        count: prevCount + 1,
+        avgDays: Math.round((prevCount * prevAvg + fullCycleDays) / (prevCount + 1))
+      };
+      setHistoryData(newHistoryData);
+
+      setData(prev => ({
+        ...prev,
+        items: prev.items.map(i => 
+          i.id === item.id ? { ...i, openedDate: now.toISOString(), initialPercent: 100 } : i
+        )
+      }));
+
+      setDetailItem(null);
+    } catch (err) {
+      console.error('Finish item error:', err);
+      alert('エラーが発生しました');
     }
   };
-  // ✅ ここまで貼り付け
 
-  const updateItem = (updatedItem) => {
-    setData(prev => ({ ...prev, items: prev.items.map(i => i.id === updatedItem.id ? updatedItem : i) }));
-    setEditItem(null);
-    setDetailItem(null);
-  };
+  const consumables = data.items
+    .filter(i => i.mode === 'consumable')
+    .sort((a, b) => calcRemainingDays(a) - calcRemainingDays(b));
+  
+  const expiries = data.items
+    .filter(i => i.mode === 'expiry')
+    .sort((a, b) => calcRemainingDays(a) - calcRemainingDays(b));
 
-  const deleteItem = (itemId) => {
-    setData(prev => ({ ...prev, items: prev.items.filter(item => item.id !== itemId) }));
-    setDetailItem(null);
-  };
-
-  const updateSettings = (newSettings) => { setData(prev => ({ ...prev, settings: { ...prev.settings, ...newSettings } })); };
-  const handleLogout = async () => { await supabase.auth.signOut(); };
-
-  const consumables = data.items.filter(i => i.mode === 'consumable').sort((a, b) => calcRemainingDays(a) - calcRemainingDays(b));
-  const expiries = data.items.filter(i => i.mode === 'expiry').sort((a, b) => calcRemainingDays(a) - calcRemainingDays(b));
-  const nearEndItems = data.items.filter(i => { const r = calcRemainingDays(i); return r > 0 && r <= (data.settings?.notifyDaysBefore || 3); });
-
-  if (loading) return <div className="min-h-screen bg-gray-50 flex items-center justify-center text-gray-400">読み込み中...</div>;
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-12 h-12 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+          <p className="font-bold text-slate-400">Loading...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-slate-50 pb-12 relative">
-      {/* PC対応ヘッダー：端から端までグラデーション、角丸なし */}
-      <header className="sticky top-0 z-30 w-full bg-gradient-to-r from-slate-800 to-emerald-900 shadow-lg">
-        <div className="max-w-5xl mx-auto px-6 py-5 flex items-center justify-between relative text-white">
-          <h1 className="text-2xl font-black tracking-tighter">
-            Stock<span className="text-emerald-300">Predict</span>
-          </h1>
-          <div className="flex items-center gap-2">
-            <button onClick={() => setShowNotification(true)} className="p-2 bg-white/10 rounded-xl hover:bg-white/20 transition-all relative">
-              <Bell size={22} />
-              {nearEndItems.length > 0 && <span className="absolute top-1 right-1 w-3 h-3 bg-rose-500 rounded-full ring-2 ring-slate-800" />}
-            </button>
-            <button onClick={() => setCurrentTab('settings')} className="p-2 bg-white/10 rounded-xl hover:bg-white/20 transition-all">
-              <Settings size={22} />
-            </button>
-          </div>
-        </div>
+      <header className="sticky top-0 z-30 w-full bg-gradient-to-r from-slate-800 to-emerald-900 shadow-lg px-6 py-5 flex items-center justify-between text-white">
+        <h1 className="text-2xl font-black tracking-tighter">
+          Stock<span className="text-emerald-300">Predict</span>
+        </h1>
+        <button 
+          onClick={() => setCurrentTab('settings')} 
+          className="p-2 bg-white/10 rounded-xl hover:bg-white/20 transition-colors"
+        >
+          <Settings size={22} />
+        </button>
       </header>
 
-      {/* メインリスト：PCではグリッドレイアウト */}
       <main className="max-w-5xl mx-auto p-5">
         <section className="mb-10">
           <div className="flex items-center gap-2 mb-4">
             <div className="w-1 h-4 bg-emerald-400 rounded-full" />
             <h2 className="text-xs font-bold text-slate-500 uppercase tracking-widest">消耗品</h2>
+            <span className="text-xs text-slate-400 ml-2">({consumables.length})</span>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {consumables.map(item => (
-              <ItemCard key={item.id} item={item} calcRemainingDays={calcRemainingDays} getRemainingPercent={getRemainingPercent} calcEndDate={calcEndDate} calcTotalDays={calcTotalDays} onClick={() => setDetailItem(item)} getUrgencyColor={getUrgencyColor} formatDate={formatDate} />
+              <ItemCard 
+                key={item.id} 
+                item={item} 
+                calcRemainingDays={calcRemainingDays} 
+                getRemainingPercent={getRemainingPercent} 
+                calcTotalDays={calcTotalDays} 
+                calcEndDate={calcEndDate} 
+                formatDate={formatDate}
+                getUrgencyColor={getUrgencyColor} 
+                onClick={() => setDetailItem(item)} 
+              />
             ))}
-            <button onClick={() => openAddModal('consumable')} className="w-full py-8 border-2 border-dashed border-slate-200 rounded-2xl flex flex-col items-center justify-center gap-2 text-slate-400 hover:border-emerald-300 hover:bg-emerald-50 transition-all group">
+            <button 
+              onClick={() => { setInitialMode('consumable'); setShowAddModal(true); }} 
+              className="w-full py-8 border-2 border-dashed border-slate-200 rounded-2xl flex flex-col items-center justify-center gap-2 text-slate-400 hover:border-emerald-300 hover:bg-emerald-50 transition-all group"
+            >
               <Plus size={24} className="group-hover:scale-110 transition-transform" />
               <span className="text-sm font-medium">消耗品を追加</span>
             </button>
@@ -256,12 +380,26 @@ useEffect(() => {
           <div className="flex items-center gap-2 mb-4">
             <div className="w-1 h-4 bg-slate-400 rounded-full" />
             <h2 className="text-xs font-bold text-slate-500 uppercase tracking-widest">期限付き</h2>
+            <span className="text-xs text-slate-400 ml-2">({expiries.length})</span>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {expiries.map(item => (
-              <ItemCard key={item.id} item={item} calcRemainingDays={calcRemainingDays} getRemainingPercent={getRemainingPercent} calcEndDate={calcEndDate} calcTotalDays={calcTotalDays} onClick={() => setDetailItem(item)} getUrgencyColor={getUrgencyColor} formatDate={formatDate} />
+              <ItemCard 
+                key={item.id} 
+                item={item} 
+                calcRemainingDays={calcRemainingDays} 
+                getRemainingPercent={getRemainingPercent} 
+                calcTotalDays={calcTotalDays} 
+                calcEndDate={calcEndDate} 
+                formatDate={formatDate}
+                getUrgencyColor={getUrgencyColor} 
+                onClick={() => setDetailItem(item)} 
+              />
             ))}
-            <button onClick={() => openAddModal('expiry')} className="w-full py-8 border-2 border-dashed border-slate-200 rounded-2xl flex flex-col items-center justify-center gap-2 text-slate-400 hover:border-slate-300 hover:bg-slate-50 transition-all group">
+            <button 
+              onClick={() => { setInitialMode('expiry'); setShowAddModal(true); }} 
+              className="w-full py-8 border-2 border-dashed border-slate-200 rounded-2xl flex flex-col items-center justify-center gap-2 text-slate-400 hover:border-slate-300 hover:bg-slate-50 transition-all group"
+            >
               <Plus size={24} className="group-hover:scale-110 transition-transform" />
               <span className="text-sm font-medium">期限付きを追加</span>
             </button>
@@ -269,128 +407,182 @@ useEffect(() => {
         </section>
       </main>
 
-      {/* 設定画面オーバーレイ */}
       {currentTab === 'settings' && (
-  <div className="fixed inset-0 z-50 bg-white overflow-y-auto">
-    <SettingsTab 
-      data={data} 
-      updateSettings={updateSettings} 
-      handleLogout={handleLogout} 
-      onBack={() => setCurrentTab('home')} 
-    />
-  </div>
-)}
+        <div className="fixed inset-0 z-50 bg-white overflow-y-auto">
+          <SettingsTab 
+            data={data} 
+            handleLogout={handleLogout} 
+            onBack={() => setCurrentTab('home')} 
+          />
+        </div>
+      )}
 
-      {/* 各種モーダル */}
-      {showAddModal && <AddItemModal onClose={() => setShowAddModal(false)} onAdd={addItem} presets={PRESETS} initialMode={initialMode} />}
-      {showNotification && <NotificationPanel items={nearEndItems} onClose={() => setShowNotification(false)} calcRemainingDays={calcRemainingDays} />}
-      {detailItem && <DetailModal item={detailItem} onClose={() => setDetailItem(null)} onFinished={handleFinished} onDelete={deleteItem} calcRemainingDays={calcRemainingDays} calcEndDate={calcEndDate} getRemainingPercent={getRemainingPercent} calcTotalDays={calcTotalDays} />}
+      {showAddModal && (
+        <AddItemModal 
+          onClose={() => setShowAddModal(false)} 
+          onAdd={addItem} 
+          initialMode={initialMode} 
+        />
+      )}
+      
+      {editItem && (
+        <EditItemModal 
+          item={editItem} 
+          onClose={() => setEditItem(null)} 
+          onUpdate={updateItem} 
+        />
+      )}
+      
+      {detailItem && (
+        <DetailModal 
+          item={detailItem} 
+          onClose={() => setDetailItem(null)} 
+          onDelete={deleteItem} 
+          onEdit={(item) => { setEditItem(item); setDetailItem(null); }}
+          onFinish={finishItem}
+          calcRemainingDays={calcRemainingDays} 
+          calcEndDate={calcEndDate} 
+          getRemainingPercent={getRemainingPercent} 
+          calcTotalDays={calcTotalDays}
+          historyCount={historyData[detailItem.id]?.count || 0}
+        />
+      )}
     </div>
   );
 }
 
-// 通知用パネル（簡易版）
-function NotificationPanel({ items, onClose, calcRemainingDays }) {
-  return (
-    <BottomSheet onClose={onClose} title="通知">
-      <div className="p-5">
-        {items.length === 0 ? <p className="text-sm text-gray-400 text-center py-8">通知はありません</p> : (
-          <div className="space-y-3">
-            {items.map(item => (
-              <div key={item.id} className="p-3 bg-red-50 rounded-xl border border-red-100 flex items-center gap-3">
-                <AlertTriangle size={20} className="text-red-500" />
-                <div className="flex-1">
-                  <p className="text-sm font-medium text-slate-700">{item.name}</p>
-                  <p className="text-xs text-red-500">あと{calcRemainingDays(item)}日で切れそうです</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-    </BottomSheet>
-  );
-}
-
-function DetailModal({ item, onClose, onFinished, onDelete, calcRemainingDays, calcEndDate, getRemainingPercent, calcTotalDays }) {
+function DetailModal({ 
+  item, 
+  onClose, 
+  onDelete, 
+  onEdit,
+  onFinish,
+  calcRemainingDays, 
+  calcEndDate, 
+  getRemainingPercent, 
+  calcTotalDays,
+  historyCount
+}) {
   const remaining = calcRemainingDays(item);
+  const total = calcTotalDays(item);
   const remainingPercent = getRemainingPercent(item);
-  const urgency = getUrgencyColor(remaining / calcTotalDays(item));
+  const urgency = getUrgencyColor(total > 0 ? remaining / total : 0);
   const Icon = ICONS[item.icon] || Package;
 
+  const handleDelete = () => {
+    if (window.confirm('「' + item.name + '」を削除しますか？')) {
+      onDelete(item.id);
+    }
+  };
+
+  const handleFinish = () => {
+    if (window.confirm('「' + item.name + '」を使い切りましたか？')) {
+      onFinish(item);
+    }
+  };
+
   return (
-    <BottomSheet onClose={onClose} title="詳細情報">
-      <div className="p-6 sm:p-10 max-w-4xl mx-auto">
-        <div className="flex flex-col md:flex-row gap-8 items-start">
+    <BottomSheet onClose={onClose} title="">
+      <div className="p-6 sm:p-10 max-w-2xl mx-auto">
+        <div 
+          className="relative rounded-[2rem] p-8 mb-6 overflow-hidden"
+          style={{ background: 'linear-gradient(135deg, ' + urgency.color + '08 0%, ' + urgency.color + '15 100%)' }}
+        >
+          <div 
+            className="absolute top-0 right-0 w-32 h-32 rounded-full blur-3xl opacity-30" 
+            style={{ background: urgency.color }} 
+          />
           
-          {/* 左側：大きなアイコンとステータス */}
-          <div className="w-full md:w-1/3 space-y-4">
+          <div className="relative flex items-center gap-6">
             <div 
-              className="w-24 h-24 sm:w-32 sm:h-32 rounded-[2.5rem] flex items-center justify-center mx-auto shadow-inner"
-              style={{ background: `${urgency.color}15` }}
+              className="w-20 h-20 rounded-2xl flex items-center justify-center shadow-lg"
+              style={{ background: 'linear-gradient(135deg, white 0%, ' + urgency.color + '10 100%)' }}
             >
-              <Icon size={48} style={{ color: urgency.color }} />
+              <Icon size={36} style={{ color: urgency.color }} />
             </div>
-            <div className="text-center">
-              <h2 className="text-2xl font-black text-slate-800">{item.name}</h2>
-              <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mt-1">
-                {item.mode === 'consumable' ? 'Consumable' : 'Expiry'}
-              </p>
-            </div>
-          </div>
-
-          {/* 右側：詳細データと進捗バー */}
-          <div className="flex-1 w-full space-y-6">
-            <div className="flex justify-between items-end">
-              <div>
-                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">残り日数</p>
-                <p className="text-4xl font-black" style={{ color: urgency.color }}>
-                  {remaining <= 0 ? '0' : remaining}<span className="text-sm ml-1 font-bold">日</span>
+            
+            <div className="flex-1 min-w-0">
+              <h2 className="text-2xl font-black text-slate-800 truncate">{item.name}</h2>
+              {item.brandName && (
+                <p className="text-sm font-medium text-slate-400 mt-1">{item.brandName}</p>
+              )}
+              {historyCount > 0 && (
+                <p className="text-xs text-emerald-500 font-bold mt-1">
+                  📊 {historyCount}回の履歴から予測中
                 </p>
-              </div>
-              <div className="text-right text-xs font-bold text-slate-500">
-                予測終了日: {formatDateFull(calcEndDate(item).toISOString())}
-              </div>
+              )}
             </div>
 
-            {/* 復活：リッチなグラデーション進捗バー */}
-            <div className="space-y-2">
-              <div className="h-4 bg-slate-100 rounded-full overflow-hidden shadow-inner">
-                <div 
-                  className="h-full rounded-full transition-all duration-1000 ease-out" 
-                  style={{ width: `${remainingPercent}%`, background: urgency.gradient }} 
-                />
-              </div>
-              <div className="flex justify-between text-[10px] font-black text-slate-300 uppercase">
-                <span>Start</span>
-                <span>{Math.round(remainingPercent)}% Remaining</span>
-              </div>
-            </div>
-
-            {/* 復活：詳細な使用者情報 */}
-            <div className="bg-slate-50 rounded-[2rem] p-5 border border-slate-100">
-              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">使用者内訳</p>
-              <div className="text-sm font-bold text-slate-600">
-                {formatUsers(item.users)}
-              </div>
-            </div>
-
-            {/* アクションボタン */}
-            <div className="flex gap-3 pt-4">
-              <button 
-                onClick={() => onFinished(item.id)} 
-                className="flex-1 py-4 bg-slate-800 text-white rounded-2xl font-black tracking-widest shadow-xl hover:bg-slate-700 transition-all active:scale-[0.98]"
-              >
-                使い終わった
-              </button>
-              <button 
-                onClick={() => onDelete(item.id)} 
-                className="p-4 bg-rose-50 text-rose-500 rounded-2xl hover:bg-rose-100 transition-colors"
-              >
-                <Trash2 size={24} />
-              </button>
+            <div 
+              className="text-center px-5 py-3 rounded-2xl"
+              style={{ background: urgency.color + '15' }}
+            >
+              <p className="text-3xl font-black" style={{ color: urgency.color }}>{remaining}</p>
+              <p className="text-[10px] font-bold text-slate-400 uppercase">days left</p>
             </div>
           </div>
+        </div>
+
+        {item.mode === 'consumable' && (
+          <button
+            onClick={handleFinish}
+            className="w-full mb-4 py-4 bg-gradient-to-r from-emerald-500 to-teal-500 text-white rounded-2xl font-bold hover:from-emerald-600 hover:to-teal-600 transition-all flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/20"
+          >
+            <Check size={20} />
+            完了
+          </button>
+        )}
+
+        <div className="mb-6">
+          <div className="flex justify-between items-center mb-2">
+            <span className="text-xs font-bold text-slate-400">残量</span>
+            <span className="text-xs font-medium text-slate-500">
+              {item.mode === 'expiry' ? '期限' : '予測終了'}: {formatDateFull(calcEndDate(item).toISOString())}
+            </span>
+          </div>
+          <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
+            <div 
+              className="h-full rounded-full transition-all duration-1000" 
+              style={{ width: remainingPercent + '%', background: urgency.gradient }} 
+            />
+          </div>
+        </div>
+
+        {item.mode === 'consumable' && (
+          <div className="grid grid-cols-2 gap-3 mb-6">
+            <div className="bg-slate-50 rounded-2xl p-4">
+              <p className="text-[10px] font-bold text-slate-400 uppercase mb-1">使用者</p>
+              <p className="text-sm font-bold text-slate-700">{formatUsers(item.adultCount, item.childCount)}</p>
+            </div>
+            {item.capacity && (
+              <div className="bg-slate-50 rounded-2xl p-4">
+                <p className="text-[10px] font-bold text-slate-400 uppercase mb-1">容量</p>
+                <p className="text-sm font-bold text-slate-700">{item.capacity} {item.unit}</p>
+              </div>
+            )}
+          </div>
+        )}
+
+        <div className="flex gap-2">
+          <button 
+            onClick={() => onEdit(item)} 
+            className="flex-1 py-4 bg-slate-100 text-slate-600 rounded-2xl font-bold hover:bg-slate-200 transition-all flex items-center justify-center gap-2"
+          >
+            <Edit3 size={18} />
+            編集
+          </button>
+          <button 
+            onClick={onClose} 
+            className="flex-1 py-4 bg-slate-800 text-white rounded-2xl font-bold hover:bg-slate-700 transition-all"
+          >
+            閉じる
+          </button>
+          <button 
+            onClick={handleDelete} 
+            className="w-14 py-4 bg-rose-50 text-rose-400 rounded-2xl hover:bg-rose-100 hover:text-rose-500 transition-all flex items-center justify-center"
+          >
+            <Trash2 size={20} />
+          </button>
         </div>
       </div>
     </BottomSheet>
